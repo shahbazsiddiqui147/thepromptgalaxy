@@ -28,6 +28,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# session handoffs with real credentials -- never commit, see docs/superpowers/handoff-*.md instead
+docs/session-secrets.local.md
+
 # typescript
 *.tsbuildinfo
 
