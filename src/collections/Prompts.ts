@@ -44,13 +44,19 @@ export const Prompts: CollectionConfig = {
     },
     {
       name: 'contentType',
-      type: 'select',
+      type: 'relationship',
+      relationTo: 'content-types',
       required: true,
-      options: [
-        { label: 'Single-frame', value: 'single' },
-        { label: 'Chain', value: 'chain' },
-      ],
-      defaultValue: 'single',
+      hasMany: false,
+    },
+    {
+      name: 'contentTypeUsesSteps',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        hidden: true,
+        description: 'Synced automatically from the selected Content Type — not editable directly.',
+      },
     },
 
     {
@@ -75,7 +81,7 @@ export const Prompts: CollectionConfig = {
       type: 'textarea',
       admin: {
         description: 'The full copyable prompt text.',
-        condition: (data) => data.contentType === 'single',
+        condition: (data) => !data.contentTypeUsesSteps,
       },
     },
 
@@ -84,7 +90,7 @@ export const Prompts: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Ordered steps — each carries context forward from the last.',
-        condition: (data) => data.contentType === 'chain',
+        condition: (data) => Boolean(data.contentTypeUsesSteps),
       },
       fields: [
         { name: 'label', type: 'text', required: true },
@@ -99,7 +105,7 @@ export const Prompts: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Result image variations shown in the gallery.',
-        condition: (data) => data.contentType === 'single',
+        condition: (data) => !data.contentTypeUsesSteps,
       },
       fields: [
         { name: 'image', type: 'upload', relationTo: 'media', required: true },
@@ -138,4 +144,20 @@ export const Prompts: CollectionConfig = {
       hasMany: true,
     },
   ],
+  hooks: {
+    beforeChange: [
+      async ({ data, req }) => {
+        if (data.contentType) {
+          const contentTypeId =
+            typeof data.contentType === 'object' ? data.contentType.id : data.contentType
+          const contentType = await req.payload.findByID({
+            collection: 'content-types',
+            id: contentTypeId,
+          })
+          data.contentTypeUsesSteps = Boolean(contentType?.usesSteps)
+        }
+        return data
+      },
+    ],
+  },
 }
