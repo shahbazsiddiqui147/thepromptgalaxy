@@ -18,6 +18,11 @@ const tools = [
   { name: 'Midjourney', slug: 'midjourney', vendor: 'Midjourney Inc.', supportsReferenceImage: false, supportsChains: false },
 ]
 
+const contentTypes = [
+  { name: 'Single-frame', slug: 'single', usesSteps: false },
+  { name: 'Chain', slug: 'chain', usesSteps: true },
+]
+
 async function seed() {
   const payload = await getPayload({ config })
 
@@ -40,6 +45,17 @@ async function seed() {
     if (existing.totalDocs === 0) {
       await payload.create({ collection: 'tools', data: tool })
       console.log(`created tool: ${tool.name}`)
+    }
+  }
+
+  for (const contentType of contentTypes) {
+    const existing = await payload.find({
+      collection: 'content-types',
+      where: { slug: { equals: contentType.slug } },
+    })
+    if (existing.totalDocs === 0) {
+      await payload.create({ collection: 'content-types', data: contentType })
+      console.log(`created content type: ${contentType.name}`)
     }
   }
 
