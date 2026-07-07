@@ -495,13 +495,13 @@ export const Prompts: CollectionConfig = {
   slug: 'prompts',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'subject', 'artStyle', 'contentType', 'status'],
+    defaultColumns: ['title', 'subject', 'artStyle', 'contentType'],
     group: 'Content',
   },
   access: {
     read: ({ req }) => {
       if (req.user) return true
-      return { status: { equals: 'published' } }
+      return { _status: { equals: 'published' } }
     },
   },
   versions: {
@@ -627,17 +627,6 @@ export const Prompts: CollectionConfig = {
       type: 'relationship',
       relationTo: 'prompts',
       hasMany: true,
-    },
-
-    {
-      name: 'status',
-      type: 'select',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      defaultValue: 'draft',
-      required: true,
     },
   ],
 }
@@ -977,11 +966,15 @@ screen appears (this is normal — the `users` table is empty). Create an accoun
 email/password. Expected: redirects to the admin dashboard showing collections grouped
 "Taxonomy" (Subjects, Art Styles, Tools) and "Content" (Prompts), plus Media and Users.
 
-- [ ] **Step 6: Commit the generated files**
+- [ ] **Step 6: Commit the generated import map**
+
+`src/payload-types.ts` is intentionally NOT committed — it's gitignored (see Task 2's
+`.gitignore`) since it's fully derived from the collection files already in the repo and
+regenerates identically via `pnpm generate:types`. Only the import map is real, committed state:
 
 ```bash
-git add src/payload-types.ts "src/app/(payload)/admin/importMap.js"
-git commit -m "chore: generate payload types and import map"
+git add "src/app/(payload)/admin/importMap.js"
+git commit -m "chore: generate payload import map"
 ```
 
 ---
@@ -1094,13 +1087,15 @@ checked, matching the "Reference Required" behavior from the project plan.
 
 - [ ] **Step 4: Verify draft/publish**
 
-Leave one prompt as `status: draft`, set the other to `published`. Query the public read API
-without auth:
+Leave one prompt saved as a draft (don't click "Publish" — just "Save Draft" or leave it
+unpublished), and click "Publish" on the other in the admin UI's document controls. Query the
+public read API without auth:
 ```bash
-curl -s http://localhost:3000/api/prompts | grep -o '"status":"[a-z]*"'
+curl -s http://localhost:3000/api/prompts | grep -o '"_status":"[a-z]*"'
 ```
-Expected: only `"status":"published"` appears — the draft one is filtered out for anonymous reads,
-confirming the `access.read` rule in `src/collections/Prompts.ts` works.
+Expected: only `"_status":"published"` appears — the draft one is filtered out for anonymous reads,
+confirming the `access.read` rule in `src/collections/Prompts.ts` correctly checks Payload's real
+publish state.
 
 No commit — this task only creates database rows, not files.
 
