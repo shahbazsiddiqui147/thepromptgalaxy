@@ -44,7 +44,11 @@ async function seed() {
   }
 
   console.log('seed complete')
-  process.exit(0)
 }
 
 seed()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
