@@ -1108,9 +1108,13 @@ No commit — this task only creates database rows, not files.
 ## Task 13: PM2 deploy to the VPS
 
 **Files:**
-- Create: `ecosystem.config.js`
+- Create: `ecosystem.config.cjs`
 
-- [ ] **Step 1: Write `ecosystem.config.js`**
+Note the `.cjs` extension, not `.js` — `package.json` has `"type": "module"`, so a plain `.js`
+file using CommonJS `module.exports` syntax fails at runtime with `ReferenceError: module is not
+defined in ES module scope`. `.cjs` explicitly opts out of ESM parsing regardless of `"type"`.
+
+- [ ] **Step 1: Write `ecosystem.config.cjs`**
 
 ```javascript
 module.exports = {
@@ -1132,7 +1136,7 @@ module.exports = {
 - [ ] **Step 2: Commit**
 
 ```bash
-git add ecosystem.config.js
+git add ecosystem.config.cjs
 git commit -m "chore: add PM2 ecosystem config for VPS deploy"
 ```
 
@@ -1145,8 +1149,11 @@ tar --exclude=node_modules --exclude=.git --exclude=.next -czf ../thepromptgalax
 - [ ] **Step 4: Copy it to the VPS**
 
 ```bash
-"/c/Program Files/PuTTY/pscp.exe" -pw <VPS_ROOT_PASSWORD> ../thepromptgalaxy-deploy.tar.gz root@46.250.239.74:/opt/apps/thepromptgalaxy-deploy.tar.gz
+"/c/Program Files/PuTTY/pscp.exe" -pw <VPS_ROOT_PASSWORD> -batch -hostkey <VPS_HOST_KEY_FINGERPRINT> ../thepromptgalaxy-deploy.tar.gz root@46.250.239.74:/opt/apps/thepromptgalaxy-deploy.tar.gz
 ```
+The `-batch -hostkey` flags are required here too (same reason as `plink` elsewhere in this
+plan) — without them `pscp` silently hangs waiting on an interactive host-key prompt instead of
+failing or proceeding.
 
 - [ ] **Step 5: Extract, install, build, and set the production `.env` on the VPS**
 
@@ -1161,27 +1168,60 @@ Edit `.env` on the VPS: `DATABASE_URI=postgresql://promptgalaxy_admin:<DB_PASSWO
 (note: `127.0.0.1:5432` directly, no tunnel needed — the app runs on the same box as Postgres) and
 the same `PAYLOAD_SECRET` value used locally.
 
+`pnpm` is not on `PATH` by default on this VPS (only `node` and `corepack` are) — enable it once:
 ```bash
+corepack enable
+```
+This makes `corepack`'s pinned `packageManager` resolve to a real `pnpm` binary on `PATH`. The
+VPS runs Node 20.20.2; corepack's own default `pnpm` version requires Node ≥22.13 and crashes
+with `ERR_UNKNOWN_BUILTIN_MODULE: node:sqlite` on this VPS. Pin a Node-20-compatible version once
+per deploy directory:
+```bash
+corepack use pnpm@9
 pnpm install
 pnpm build
 ```
-Expected: build completes with `Compiled successfully`.
+Expected: build completes with `Compiled successfully` (same output as local `pnpm build`).
 
 - [ ] **Step 6: Start with PM2 and verify**
 
 ```bash
-pm2 start ecosystem.config.js
+pm2 delete thepromptgalaxy 2>/dev/null; pm2 start ecosystem.config.cjs
 pm2 save
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3006/admin
 ```
-Expected: `pm2 list` shows `thepromptgalaxy` as `online`; curl prints `200`.
+Expected: `pm2 list` shows `thepromptgalaxy` as `online`; curl prints `200`. The `pm2 delete ...
+2>/dev/null;` prefix makes this safe to re-run if a previous deploy attempt already registered the
+app under PM2.
 
 - [ ] **Step 7: Verify reachable from outside** (no domain yet, so by IP:port)
 
-From your local machine, open `http://46.250.239.74:3006/admin` in a browser. Expected: same admin
-login screen as local dev, now pointed at the same production database.
+From your local machine:
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" http://46.250.239.74:3006/admin
+```
+Expected: `200`. Then open `http://46.250.239.74:3006/admin` in a browser — same admin login
+screen as local dev, now pointed at the same production database (any Prompts/taxonomy created
+during local testing are visible here too, since it's the same Postgres instance the whole time).
 
 No further commit — this task is a deploy operation, not a code change.
+
+### Bugs found and fixed while executing this task
+
+Two pre-existing bugs from earlier tasks only surfaced here, because this was the first time the
+app was actually built for production (local dev only ever ran `next dev`, which doesn't exercise
+either code path):
+
+1. **`package.json`'s `build` script was `payload build`, which doesn't exist.** `payload@3.85.2`'s
+   CLI only exposes `generate:*`, `info`, `run`, `jobs:*`, `migrate:*` — no `build` subcommand
+   (confirmed against `node_modules/payload/dist/bin/index.js`). This was copied from Payload's
+   template repo at its bleeding-edge default-branch HEAD (the same source that had the Node ≥24
+   `engines` requirement caught and fixed back in Task 2) — that branch's unreleased CLI apparently
+   supports a `build` command that 3.85.2 doesn't. Fixed to `next build`, matching the existing
+   `start`/`dev` scripts' pattern — Payload's Next.js-embedded integration has no separate build
+   step of its own; `next build` already bundles the `(payload)` route group.
+2. **`ecosystem.config.js` (`.js` extension) with CommonJS `module.exports` conflicts with
+   `"type": "module"`** — fixed by renaming to `.cjs`, as reflected above.
 
 ---
 
