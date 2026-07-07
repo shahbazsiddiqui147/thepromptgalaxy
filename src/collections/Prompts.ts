@@ -146,10 +146,11 @@ export const Prompts: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
-        if (data.contentType) {
+      async ({ data, req, originalDoc }) => {
+        const contentTypeRef = data.contentType ?? originalDoc?.contentType
+        if (contentTypeRef) {
           const contentTypeId =
-            typeof data.contentType === 'object' ? data.contentType.id : data.contentType
+            typeof contentTypeRef === 'object' ? contentTypeRef.id : contentTypeRef
           const contentType = await req.payload.findByID({
             collection: 'content-types',
             id: contentTypeId,
