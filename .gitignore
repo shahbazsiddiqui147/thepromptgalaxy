@@ -30,7 +30,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 /media
 payload-types.ts

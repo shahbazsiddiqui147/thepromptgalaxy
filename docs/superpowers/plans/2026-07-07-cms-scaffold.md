@@ -1,6 +1,6 @@
 # The Prompt Galaxy — Payload CMS Scaffold Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Stand up a working Payload CMS (Next.js app) with all taxonomy and prompt collections
 wired up and admin-editable, backed by a dedicated Postgres database on the existing VPS, running
@@ -28,7 +28,7 @@ files are gitignored, etc).
 
 **Files:** none (remote-only, no repo files touched)
 
-- [ ] **Step 1: Generate a strong password for the new DB role**
+- [x] **Step 1: Generate a strong password for the new DB role**
 
 Run on the VPS:
 ```bash
@@ -37,7 +37,7 @@ openssl rand -base64 24 | tr -d '/+=' | cut -c1-24
 ```
 Copy the printed value — referred to below as `<DB_PASSWORD>`. Do not write it into any repo file.
 
-- [ ] **Step 2: Create the role and database**
+- [x] **Step 2: Create the role and database**
 
 Still on the VPS:
 ```bash
@@ -46,7 +46,7 @@ sudo -u postgres psql -c "CREATE DATABASE promptgalaxy_prod OWNER promptgalaxy_a
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE promptgalaxy_prod TO promptgalaxy_admin;"
 ```
 
-- [ ] **Step 3: Verify the new role can connect**
+- [x] **Step 3: Verify the new role can connect**
 
 ```bash
 PGPASSWORD='<DB_PASSWORD>' psql -h 127.0.0.1 -U promptgalaxy_admin -d promptgalaxy_prod -c '\conninfo'
@@ -66,7 +66,7 @@ No commit — infra-only, no repo files changed.
 - Create: `.gitignore` (merge with any existing entries)
 - Create: `next-env.d.ts`
 
-- [ ] **Step 1: Write `package.json`**
+- [x] **Step 1: Write `package.json`**
 
 ```json
 {
@@ -112,7 +112,7 @@ No commit — infra-only, no repo files changed.
 }
 ```
 
-- [ ] **Step 2: Write `tsconfig.json`**
+- [x] **Step 2: Write `tsconfig.json`**
 
 ```json
 {
@@ -141,7 +141,7 @@ No commit — infra-only, no repo files changed.
 }
 ```
 
-- [ ] **Step 3: Write `next.config.ts`**
+- [x] **Step 3: Write `next.config.ts`**
 
 ```typescript
 import { withPayload } from '@payloadcms/next/withPayload'
@@ -169,7 +169,7 @@ const nextConfig: NextConfig = {
 export default withPayload(nextConfig, { devBundleServerPackages: false })
 ```
 
-- [ ] **Step 4: Write/merge `.gitignore`**
+- [x] **Step 4: Write/merge `.gitignore`**
 
 ```
 # dependencies
@@ -208,14 +208,14 @@ next-env.d.ts
 payload-types.ts
 ```
 
-- [ ] **Step 5: Create empty `next-env.d.ts`**
+- [x] **Step 5: Create empty `next-env.d.ts`**
 
 ```typescript
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add package.json tsconfig.json next.config.ts .gitignore next-env.d.ts
@@ -228,14 +228,14 @@ git commit -m "chore: scaffold Next.js app skeleton"
 
 **Files:** none (generates `pnpm-lock.yaml`, `node_modules/`)
 
-- [ ] **Step 1: Install**
+- [x] **Step 1: Install**
 
 ```bash
 pnpm install
 ```
 Expected: completes without error, creates `pnpm-lock.yaml` and `node_modules/`.
 
-- [ ] **Step 2: Commit the lockfile**
+- [x] **Step 2: Commit the lockfile**
 
 ```bash
 git add pnpm-lock.yaml
@@ -250,7 +250,7 @@ git commit -m "chore: add pnpm lockfile"
 - Create: `src/collections/Users.ts`
 - Create: `src/collections/Media.ts`
 
-- [ ] **Step 1: Write `src/collections/Users.ts`**
+- [x] **Step 1: Write `src/collections/Users.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -265,7 +265,7 @@ export const Users: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 2: Write `src/collections/Media.ts`**
+- [x] **Step 2: Write `src/collections/Media.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -294,7 +294,7 @@ export const Media: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/collections/Users.ts src/collections/Media.ts
@@ -310,7 +310,7 @@ git commit -m "feat: add Users and Media collections"
 - Create: `src/collections/ArtStyles.ts`
 - Create: `src/collections/Tools.ts`
 
-- [ ] **Step 1: Write `src/collections/Subjects.ts`**
+- [x] **Step 1: Write `src/collections/Subjects.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -361,7 +361,7 @@ export const Subjects: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 2: Write `src/collections/ArtStyles.ts`**
+- [x] **Step 2: Write `src/collections/ArtStyles.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -412,7 +412,7 @@ export const ArtStyles: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 3: Write `src/collections/Tools.ts`**
+- [x] **Step 3: Write `src/collections/Tools.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -472,7 +472,7 @@ export const Tools: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/collections/Subjects.ts src/collections/ArtStyles.ts src/collections/Tools.ts
@@ -486,7 +486,7 @@ git commit -m "feat: add Subjects, ArtStyles, Tools taxonomy collections"
 **Files:**
 - Create: `src/collections/Prompts.ts`
 
-- [ ] **Step 1: Write `src/collections/Prompts.ts`**
+- [x] **Step 1: Write `src/collections/Prompts.ts`**
 
 ```typescript
 import type { CollectionConfig } from 'payload'
@@ -632,7 +632,7 @@ export const Prompts: CollectionConfig = {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/collections/Prompts.ts
@@ -646,7 +646,7 @@ git commit -m "feat: add Prompts collection"
 **Files:**
 - Create: `src/payload.config.ts`
 
-- [ ] **Step 1: Write `src/payload.config.ts`**
+- [x] **Step 1: Write `src/payload.config.ts`**
 
 ```typescript
 import { postgresAdapter } from '@payloadcms/db-postgres'
@@ -701,7 +701,7 @@ export default buildConfig({
 })
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add src/payload.config.ts
@@ -721,12 +721,11 @@ git commit -m "feat: wire payload.config.ts with postgres adapter and all collec
 - Create: `src/app/(payload)/api/[...slug]/route.ts`
 - Create: `src/app/(payload)/api/graphql/route.ts`
 - Create: `src/app/(payload)/api/graphql-playground/route.ts`
-- Create: `src/app/favicon.ico` placeholder (skip if one already exists from a prior step)
 
 These files are standard Payload/Next.js glue — they don't change per-project except the import
-map, which gets regenerated in Task 9.
+map, which gets regenerated in Task 10.
 
-- [ ] **Step 1: Write `src/app/(payload)/layout.tsx`**
+- [x] **Step 1: Write `src/app/(payload)/layout.tsx`**
 
 ```typescript
 import config from '@payload-config'
@@ -760,12 +759,12 @@ const Layout = ({ children }: Args) => (
 export default Layout
 ```
 
-- [ ] **Step 2: Create empty `src/app/(payload)/custom.scss`**
+- [x] **Step 2: Create empty `src/app/(payload)/custom.scss`**
 
 ```scss
 ```
 
-- [ ] **Step 3: Write a placeholder `src/app/(payload)/admin/importMap.js`**
+- [x] **Step 3: Write a placeholder `src/app/(payload)/admin/importMap.js`**
 
 ```javascript
 /** @type import('payload').ImportMap */
@@ -775,7 +774,7 @@ export const importMap = {}
 This gets overwritten by the real generated map in Task 9 — Payload only needs the file to exist
 right now so the layout above can import it.
 
-- [ ] **Step 4: Write `src/app/(payload)/admin/[[...segments]]/page.tsx`**
+- [x] **Step 4: Write `src/app/(payload)/admin/[[...segments]]/page.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -802,7 +801,7 @@ const Page = ({ params, searchParams }: Args) =>
 export default Page
 ```
 
-- [ ] **Step 5: Write `src/app/(payload)/admin/[[...segments]]/not-found.tsx`**
+- [x] **Step 5: Write `src/app/(payload)/admin/[[...segments]]/not-found.tsx`**
 
 ```typescript
 import type { Metadata } from 'next'
@@ -829,7 +828,7 @@ const NotFound = ({ params, searchParams }: Args) =>
 export default NotFound
 ```
 
-- [ ] **Step 6: Write `src/app/(payload)/api/[...slug]/route.ts`**
+- [x] **Step 6: Write `src/app/(payload)/api/[...slug]/route.ts`**
 
 ```typescript
 import config from '@payload-config'
@@ -851,7 +850,7 @@ export const PUT = REST_PUT(config)
 export const OPTIONS = REST_OPTIONS(config)
 ```
 
-- [ ] **Step 7: Write `src/app/(payload)/api/graphql/route.ts`**
+- [x] **Step 7: Write `src/app/(payload)/api/graphql/route.ts`**
 
 ```typescript
 import config from '@payload-config'
@@ -862,7 +861,7 @@ export const POST = GRAPHQL_POST(config)
 export const OPTIONS = REST_OPTIONS(config)
 ```
 
-- [ ] **Step 8: Write `src/app/(payload)/api/graphql-playground/route.ts`**
+- [x] **Step 8: Write `src/app/(payload)/api/graphql-playground/route.ts`**
 
 ```typescript
 import config from '@payload-config'
@@ -872,7 +871,7 @@ import { GRAPHQL_PLAYGROUND_GET } from '@payloadcms/next/routes'
 export const GET = GRAPHQL_PLAYGROUND_GET(config)
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add "src/app/(payload)"
@@ -887,14 +886,14 @@ git commit -m "feat: add Payload Next.js integration routes"
 - Create: `.env.example`
 - Create: `scripts/db-tunnel.sh`
 
-- [ ] **Step 1: Write `.env.example`**
+- [x] **Step 1: Write `.env.example`**
 
 ```
 DATABASE_URI=postgresql://promptgalaxy_admin:PASSWORD@127.0.0.1:5433/promptgalaxy_prod
 PAYLOAD_SECRET=
 ```
 
-- [ ] **Step 2: Write `scripts/db-tunnel.sh`** (opens a local port 5433 forwarding to the VPS's Postgres on 5432, so local dev talks to the one real database instead of a separate local copy)
+- [x] **Step 2: Write `scripts/db-tunnel.sh`** (opens a local port 5433 forwarding to the VPS's Postgres on 5432, so local dev talks to the one real database instead of a separate local copy)
 
 ```bash
 #!/usr/bin/env bash
@@ -902,7 +901,7 @@ PAYLOAD_SECRET=
 ssh -N -L 5433:127.0.0.1:5432 root@46.250.239.74
 ```
 
-- [ ] **Step 3: Create your real `.env` (gitignored, not committed)**
+- [x] **Step 3: Create your real `.env` (gitignored, not committed)**
 
 ```bash
 cp .env.example .env
@@ -914,7 +913,7 @@ openssl rand -base64 32
 ```
 Paste that value in as `PAYLOAD_SECRET`.
 
-- [ ] **Step 4: Commit (only the example file and script — `.env` is gitignored)**
+- [x] **Step 4: Commit (only the example file and script — `.env` is gitignored)**
 
 ```bash
 chmod +x scripts/db-tunnel.sh
@@ -928,14 +927,14 @@ git commit -m "chore: add env example and db tunnel helper script"
 
 **Files:** none (generates `src/payload-types.ts`, overwrites `src/app/(payload)/admin/importMap.js`)
 
-- [ ] **Step 1: Start the DB tunnel in its own terminal**
+- [x] **Step 1: Start the DB tunnel in its own terminal**
 
 ```bash
 bash scripts/db-tunnel.sh
 ```
 Leave this running. Expected: no output, connection stays open (this is normal for `-N`).
 
-- [ ] **Step 2: Generate the real import map**
+- [x] **Step 2: Generate the real import map**
 
 In a second terminal:
 ```bash
@@ -944,7 +943,7 @@ pnpm generate:importmap
 Expected: overwrites `src/app/(payload)/admin/importMap.js` with real (possibly empty, since we
 have no custom admin components yet) content, exits 0.
 
-- [ ] **Step 3: Generate types**
+- [x] **Step 3: Generate types**
 
 ```bash
 pnpm generate:types
@@ -952,21 +951,21 @@ pnpm generate:types
 Expected: creates `src/payload-types.ts`, exits 0. This confirms the Postgres connection works —
 if `DATABASE_URI` or the tunnel is wrong, this step fails with a connection error.
 
-- [ ] **Step 4: Start the dev server**
+- [x] **Step 4: Start the dev server**
 
 ```bash
 pnpm dev
 ```
 Expected: `Ready in ...ms`, listening on `http://localhost:3000`.
 
-- [ ] **Step 5: Verify the admin panel loads and create the first admin user**
+- [x] **Step 5: Verify the admin panel loads and create the first admin user**
 
 Open `http://localhost:3000/admin` in a browser. Expected: Payload's "Create your first user"
 screen appears (this is normal — the `users` table is empty). Create an account with your own
 email/password. Expected: redirects to the admin dashboard showing collections grouped
 "Taxonomy" (Subjects, Art Styles, Tools) and "Content" (Prompts), plus Media and Users.
 
-- [ ] **Step 6: Commit the generated import map**
+- [x] **Step 6: Commit the generated import map**
 
 `src/payload-types.ts` is intentionally NOT committed — it's gitignored (see Task 2's
 `.gitignore`) since it's fully derived from the collection files already in the repo and
@@ -984,7 +983,7 @@ git commit -m "chore: generate payload import map"
 **Files:**
 - Create: `scripts/seed.ts`
 
-- [ ] **Step 1: Write `scripts/seed.ts`**
+- [x] **Step 1: Write `scripts/seed.ts`**
 
 ```typescript
 import { getPayload } from 'payload'
@@ -1047,19 +1046,19 @@ Note: Art Styles are intentionally left empty — the source plan only enumerate
 5 Tools explicitly; Art Styles (e.g. "Photorealistic", "Cyberpunk") weren't pinned down yet, so
 that's a real admin-panel task for you rather than a guess baked into a seed script.
 
-- [ ] **Step 2: Run it (with the DB tunnel from Task 10 still running)**
+- [x] **Step 2: Run it (with the DB tunnel from Task 10 still running)**
 
 ```bash
 pnpm seed
 ```
 Expected: prints `created subject: ...` six times, `created tool: ...` five times, then `seed complete`.
 
-- [ ] **Step 3: Verify in the admin panel**
+- [x] **Step 3: Verify in the admin panel**
 
 Refresh `http://localhost:3000/admin/collections/subjects` — expect 6 rows. Refresh
 `http://localhost:3000/admin/collections/tools` — expect 5 rows.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add scripts/seed.ts
@@ -1072,24 +1071,24 @@ git commit -m "feat: add taxonomy seed script"
 
 **Files:** none (content created through the admin UI, not code)
 
-- [ ] **Step 1: Create a single-frame prompt**
+- [x] **Step 1: Create a single-frame prompt**
 
 In `http://localhost:3000/admin/collections/prompts`, create a new prompt: set `contentType` to
 "Single-frame", fill `title`, `slug`, `subject` (pick one seeded), `artStyle` (create one inline if
 none exist yet), `tools` (pick one or more seeded), `blurb`, `promptText`. Expected: `promptText`
 field is visible, `steps` field is hidden (conditional on `contentType === 'chain'`).
 
-- [ ] **Step 2: Create a chain prompt**
+- [x] **Step 2: Create a chain prompt**
 
 Create another prompt with `contentType` set to "Chain". Expected: `promptText` field disappears,
 `steps` array field appears instead. Add 2 steps with `label`, `note`, `promptText`.
 
-- [ ] **Step 3: Verify the reference-image conditional field**
+- [x] **Step 3: Verify the reference-image conditional field**
 
 On either prompt, check `referenceRequired`. Expected: `referenceNote` field appears only once
 checked, matching the "Reference Required" behavior from the project plan.
 
-- [ ] **Step 4: Verify draft/publish**
+- [x] **Step 4: Verify draft/publish**
 
 Leave one prompt saved as a draft (don't click "Publish" — just "Save Draft" or leave it
 unpublished), and click "Publish" on the other in the admin UI's document controls. Query the
@@ -1114,7 +1113,7 @@ Note the `.cjs` extension, not `.js` — `package.json` has `"type": "module"`, 
 file using CommonJS `module.exports` syntax fails at runtime with `ReferenceError: module is not
 defined in ES module scope`. `.cjs` explicitly opts out of ESM parsing regardless of `"type"`.
 
-- [ ] **Step 1: Write `ecosystem.config.cjs`**
+- [x] **Step 1: Write `ecosystem.config.cjs`**
 
 ```javascript
 module.exports = {
@@ -1133,20 +1132,20 @@ module.exports = {
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add ecosystem.config.cjs
 git commit -m "chore: add PM2 ecosystem config for VPS deploy"
 ```
 
-- [ ] **Step 3: Package the app for transfer**
+- [x] **Step 3: Package the app for transfer**
 
 ```bash
 tar --exclude=node_modules --exclude=.git --exclude=.next -czf ../thepromptgalaxy-deploy.tar.gz .
 ```
 
-- [ ] **Step 4: Copy it to the VPS**
+- [x] **Step 4: Copy it to the VPS**
 
 ```bash
 "/c/Program Files/PuTTY/pscp.exe" -pw <VPS_ROOT_PASSWORD> -batch -hostkey <VPS_HOST_KEY_FINGERPRINT> ../thepromptgalaxy-deploy.tar.gz root@46.250.239.74:/opt/apps/thepromptgalaxy-deploy.tar.gz
@@ -1155,7 +1154,7 @@ The `-batch -hostkey` flags are required here too (same reason as `plink` elsewh
 plan) — without them `pscp` silently hangs waiting on an interactive host-key prompt instead of
 failing or proceeding.
 
-- [ ] **Step 5: Extract, install, build, and set the production `.env` on the VPS**
+- [x] **Step 5: Extract, install, build, and set the production `.env` on the VPS**
 
 ```bash
 ssh root@46.250.239.74
@@ -1183,7 +1182,7 @@ pnpm build
 ```
 Expected: build completes with `Compiled successfully` (same output as local `pnpm build`).
 
-- [ ] **Step 6: Start with PM2 and verify**
+- [x] **Step 6: Start with PM2 and verify**
 
 ```bash
 pm2 delete thepromptgalaxy 2>/dev/null; pm2 start ecosystem.config.cjs
@@ -1194,7 +1193,7 @@ Expected: `pm2 list` shows `thepromptgalaxy` as `online`; curl prints `200`. The
 2>/dev/null;` prefix makes this safe to re-run if a previous deploy attempt already registered the
 app under PM2.
 
-- [ ] **Step 7: Verify reachable from outside** (no domain yet, so by IP:port)
+- [x] **Step 7: Verify reachable from outside** (no domain yet, so by IP:port)
 
 From your local machine:
 ```bash
