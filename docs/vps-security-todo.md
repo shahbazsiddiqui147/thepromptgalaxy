@@ -17,7 +17,9 @@ reachable from the internet, not just 80/443.
 25/465/587/993/995/110/143/4190 (mailcow).
 
 **Ports currently public but shouldn't be:** `5432` (Postgres), and the raw Next.js/PM2 ports
-`3000–3003, 3005, 3010` (each site is reachable directly by `IP:port`, bypassing nginx/TLS).
+`3000–3003, 3005, 3010` (each site is reachable directly by `IP:port`, bypassing nginx/TLS). Add
+`3006` to this list — The Prompt Galaxy was deployed there in 2026-07-07 and has the same
+bypasses-nginx exposure as the other sites' raw ports until a domain + vhost exist for it.
 
 **Fix:** enable UFW, allow only the ports above, default-deny the rest. Verified safe — every
 site's real traffic goes through nginx (`proxy_pass` targets checked for all vhosts), so this
@@ -55,6 +57,29 @@ found on the box) — nothing rate-limits or bans repeated login attempts.
 login authenticated via publickey (ED25519); password auth appears unused in practice. Before
 flipping this, confirm whoever administers the box day-to-day has a working key loaded — don't
 want to lock out the one path that isn't logged yet.
+
+## 4. The Prompt Galaxy deploy — follow-ups from the Task 13 code review
+
+Found while deploying the app itself (2026-07-07), not part of the original VPS audit above, but
+tracked here since it's the same "revisit before real users" bucket:
+
+- **`PAYLOAD_SECRET` is currently identical between local dev and the VPS deploy.** This secret
+  signs Payload's auth/session tokens (`src/payload.config.ts`) — sharing it means a leaked local
+  `.env` (even though gitignored) would compromise production auth, and a session forged/replayed
+  against one environment is valid against the other. **Fix before real users/content:** generate
+  a distinct secret for the VPS (`openssl rand -base64 32`), update `/opt/apps/thepromptgalaxy/.env`
+  on the VPS only, `pm2 restart thepromptgalaxy`. Local dev keeps its own secret unchanged.
+- **`ecosystem.config.cjs` runs `script: 'pnpm'`, which only resolves because `corepack enable` +
+  `corepack use pnpm@9` were run manually in `/opt/apps/thepromptgalaxy`.** If PM2 is ever
+  configured to auto-start on boot (`pm2 startup`) under a different shell/environment than the
+  one used during this deploy, `pnpm` might not resolve on `PATH` and the app could silently fail
+  to restart after a VPS reboot. Consider pointing `script` at `node_modules/.bin/next` directly
+  (with `args: 'start'`) to remove the `pnpm`-on-PATH dependency for the process PM2 actually
+  supervises.
+- **No PM2 hardening yet** — no `max_memory_restart`, no explicit `error_file`/`out_file` log
+  paths, no `exp_backoff_restart_delay`. Fine for a first deploy with no traffic; revisit before
+  scaling or exposing this to real users, since PM2's bare defaults will crash-loop or silently
+  OOM-restart without useful logs otherwise.
 
 ---
 
