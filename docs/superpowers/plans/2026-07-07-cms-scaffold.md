@@ -956,11 +956,15 @@ screen appears (this is normal — the `users` table is empty). Create an accoun
 email/password. Expected: redirects to the admin dashboard showing collections grouped
 "Taxonomy" (Subjects, Art Styles, Tools) and "Content" (Prompts), plus Media and Users.
 
-- [ ] **Step 6: Commit the generated files**
+- [ ] **Step 6: Commit the generated import map**
+
+`src/payload-types.ts` is intentionally NOT committed — it's gitignored (see Task 2's
+`.gitignore`) since it's fully derived from the collection files already in the repo and
+regenerates identically via `pnpm generate:types`. Only the import map is real, committed state:
 
 ```bash
-git add src/payload-types.ts "src/app/(payload)/admin/importMap.js"
-git commit -m "chore: generate payload types and import map"
+git add "src/app/(payload)/admin/importMap.js"
+git commit -m "chore: generate payload import map"
 ```
 
 ---
