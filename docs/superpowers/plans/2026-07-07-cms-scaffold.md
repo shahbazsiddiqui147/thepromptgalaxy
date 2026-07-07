@@ -107,7 +107,7 @@ No commit — infra-only, no repo files changed.
     "typescript": "6.0.3"
   },
   "engines": {
-    "node": "^18.20.2 || >=20.9.0"
+    "node": ">=20.6.0"
   }
 }
 ```
@@ -1033,10 +1033,14 @@ async function seed() {
   }
 
   console.log('seed complete')
-  process.exit(0)
 }
 
 seed()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
 ```
 
 Note: Art Styles are intentionally left empty — the source plan only enumerates the 6 Subjects and
