@@ -26,7 +26,7 @@ export const ArtStyles: CollectionConfig = {
     {
       name: 'colorHex',
       type: 'text',
-      admin: { description: 'Hex color used for this style's tag/dot in the UI, e.g. #C9A227' },
+      admin: { description: 'Hex color used for this style’s tag/dot in the UI, e.g. #C9A227' },
     },
     {
       name: 'wordChoiceGuide',
