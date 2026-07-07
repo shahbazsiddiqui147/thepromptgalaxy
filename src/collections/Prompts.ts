@@ -4,13 +4,13 @@ export const Prompts: CollectionConfig = {
   slug: 'prompts',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'subject', 'artStyle', 'contentType', 'status'],
+    defaultColumns: ['title', 'subject', 'artStyle', 'contentType'],
     group: 'Content',
   },
   access: {
     read: ({ req }) => {
       if (req.user) return true
-      return { status: { equals: 'published' } }
+      return { _status: { equals: 'published' } }
     },
   },
   versions: {
@@ -136,17 +136,6 @@ export const Prompts: CollectionConfig = {
       type: 'relationship',
       relationTo: 'prompts',
       hasMany: true,
-    },
-
-    {
-      name: 'status',
-      type: 'select',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
-      ],
-      defaultValue: 'draft',
-      required: true,
     },
   ],
 }
