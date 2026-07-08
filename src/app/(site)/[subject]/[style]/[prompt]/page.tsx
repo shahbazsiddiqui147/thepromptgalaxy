@@ -45,6 +45,8 @@ export default async function PromptPage({
   const artStyle = prompt.artStyle as ArtStyle
   const tools = prompt.tools as Tool[]
 
+  // The URL's subject/style segments must match the prompt's actual taxonomy —
+  // otherwise this is a stale/incorrect link, not a valid alternate path.
   if (subject.slug !== subjectSlug || artStyle.slug !== styleSlug) notFound()
 
   return (
