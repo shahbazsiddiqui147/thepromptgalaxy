@@ -3,6 +3,10 @@ import type { Subject, ArtStyle, Tool, Prompt } from '@/payload-types'
 
 export const MIN_PROMPTS_FOR_COMBO_PAGE = 3
 
+// Payload's Local API defaults `overrideAccess` to true, bypassing each collection's
+// `access.read` control entirely -- every query below must filter status itself.
+const PUBLISHED = { _status: { equals: 'published' } } as const
+
 export async function getSubjects(): Promise<Subject[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({ collection: 'subjects', limit: 100, sort: 'sortOrder' })
@@ -60,7 +64,7 @@ export async function getPromptsBySubject(subjectId: number): Promise<Prompt[]> 
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ subject: { equals: subjectId } }, { _status: { equals: 'published' } }] },
+    where: { and: [{ subject: { equals: subjectId } }, PUBLISHED] },
     depth: 2,
     sort: '-createdAt',
     limit: 100,
@@ -72,7 +76,7 @@ export async function getPromptsByArtStyle(artStyleId: number): Promise<Prompt[]
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ artStyle: { equals: artStyleId } }, { _status: { equals: 'published' } }] },
+    where: { and: [{ artStyle: { equals: artStyleId } }, PUBLISHED] },
     depth: 2,
     sort: '-createdAt',
     limit: 100,
@@ -84,7 +88,7 @@ export async function getPromptsByTool(toolId: number): Promise<Prompt[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ tools: { equals: toolId } }, { _status: { equals: 'published' } }] },
+    where: { and: [{ tools: { equals: toolId } }, PUBLISHED] },
     depth: 2,
     sort: '-createdAt',
     limit: 100,
@@ -103,7 +107,7 @@ export async function getPromptsBySubjectAndStyle(
       and: [
         { subject: { equals: subjectId } },
         { artStyle: { equals: artStyleId } },
-        { _status: { equals: 'published' } },
+        PUBLISHED,
       ],
     },
     depth: 2,
@@ -118,7 +122,7 @@ export async function getChainPrompts(): Promise<Prompt[]> {
   const result = await payload.find({
     collection: 'prompts',
     where: {
-      and: [{ contentTypeUsesSteps: { equals: true } }, { _status: { equals: 'published' } }],
+      and: [{ contentTypeUsesSteps: { equals: true } }, PUBLISHED],
     },
     depth: 2,
     sort: '-createdAt',
@@ -131,7 +135,7 @@ export async function getRecentPrompts(limit = 8): Promise<Prompt[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { _status: { equals: 'published' } },
+    where: PUBLISHED,
     depth: 2,
     sort: '-createdAt',
     limit,
@@ -143,7 +147,7 @@ export async function getPromptBySlug(slug: string): Promise<Prompt | null> {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }] },
+    where: { and: [{ slug: { equals: slug } }, PUBLISHED] },
     depth: 2,
     limit: 1,
   })
