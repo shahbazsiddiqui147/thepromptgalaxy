@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { getRecentPrompts, getSubjects, getTools } from '@/lib/queries'
 import { BrowseClient } from './BrowseClient'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   robots: { index: false, follow: true },
 }

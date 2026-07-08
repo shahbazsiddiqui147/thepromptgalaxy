@@ -163,21 +163,32 @@ export const Prompts: CollectionConfig = {
     ],
     afterChange: [
       async ({ doc, req }) => {
-        const subject =
-          typeof doc.subject === 'object'
-            ? doc.subject
-            : await req.payload.findByID({ collection: 'subjects', id: doc.subject })
-        const artStyle =
-          typeof doc.artStyle === 'object'
-            ? doc.artStyle
-            : await req.payload.findByID({ collection: 'art-styles', id: doc.artStyle })
+        try {
+          const subject =
+            typeof doc.subject === 'object'
+              ? doc.subject
+              : await req.payload.findByID({ collection: 'subjects', id: doc.subject })
+          const artStyle =
+            typeof doc.artStyle === 'object'
+              ? doc.artStyle
+              : await req.payload.findByID({ collection: 'art-styles', id: doc.artStyle })
 
-        revalidatePath('/')
-        revalidatePath(`/${subject.slug}/`)
-        revalidatePath(`/${subject.slug}/${artStyle.slug}/`)
-        revalidatePath(`/${subject.slug}/${artStyle.slug}/${doc.slug}/`)
-        revalidatePath(`/style/${artStyle.slug}/`)
-        revalidatePath('/chains/')
+          revalidatePath('/')
+          revalidatePath(`/${subject.slug}/`)
+          revalidatePath(`/${subject.slug}/${artStyle.slug}/`)
+          revalidatePath(`/${subject.slug}/${artStyle.slug}/${doc.slug}/`)
+          revalidatePath(`/style/${artStyle.slug}/`)
+          revalidatePath('/chains/')
+
+          const tools = Array.isArray(doc.tools) ? doc.tools : []
+          for (const t of tools) {
+            const tool =
+              typeof t === 'object' ? t : await req.payload.findByID({ collection: 'tools', id: t })
+            if (tool?.slug) revalidatePath(`/tool/${tool.slug}/`)
+          }
+        } catch (err) {
+          req.payload.logger.error({ err, msg: 'afterChange revalidation failed for prompt', docId: doc.id })
+        }
       },
     ],
   },
