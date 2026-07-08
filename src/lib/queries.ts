@@ -97,26 +97,25 @@ export async function getPromptsByTool(toolId: number): Promise<Prompt[]> {
   return result.docs
 }
 
-export async function getPromptsBySubjectAndStyle(
-  subjectId: number,
-  artStyleId: number,
-): Promise<Prompt[]> {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'prompts',
-    where: {
-      and: [
-        { subject: { equals: subjectId } },
-        { artStyle: { equals: artStyleId } },
-        PUBLISHED,
-      ],
-    },
-    depth: 2,
-    sort: '-createdAt',
-    limit: 100,
-  })
-  return result.docs
-}
+export const getPromptsBySubjectAndStyle = cache(
+  async (subjectId: number, artStyleId: number): Promise<Prompt[]> => {
+    const payload = await getPayloadClient()
+    const result = await payload.find({
+      collection: 'prompts',
+      where: {
+        and: [
+          { subject: { equals: subjectId } },
+          { artStyle: { equals: artStyleId } },
+          PUBLISHED,
+        ],
+      },
+      depth: 2,
+      sort: '-createdAt',
+      limit: 100,
+    })
+    return result.docs
+  },
+)
 
 export async function getChainPrompts(): Promise<Prompt[]> {
   const payload = await getPayloadClient()
