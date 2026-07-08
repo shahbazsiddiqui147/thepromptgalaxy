@@ -81,6 +81,53 @@ tracked here since it's the same "revisit before real users" bucket:
   scaling or exposing this to real users, since PM2's bare defaults will crash-loop or silently
   OOM-restart without useful logs otherwise.
 
+## 5. Raw DDL run directly against production Postgres during Task 4 of the public-frontend plan
+
+While executing Task 4 of `docs/superpowers/plans/2026-07-07-public-frontend.md` (2026-07-08), the
+subagent running `pnpm seed` discovered that Task 2's schema change (converting
+`Prompts.contentType` from a text enum to a relationship) had never actually been pushed to the
+database — Payload's dev-mode `drizzle-kit push` stopped on an interactive "create column or
+rename column?" prompt that can't be answered in a non-interactive session.
+
+To unblock, the subagent ran this raw SQL directly against `promptgalaxy_prod` (the live production
+database, reached via the SSH tunnel on port 5433 — **not** a separate dev database, this project
+has only one Postgres instance):
+
+```sql
+ALTER TABLE prompts DROP COLUMN content_type;
+ALTER TABLE _prompts_v DROP COLUMN version_content_type;
+DROP TYPE IF EXISTS enum_prompts_content_type;
+DROP TYPE IF EXISTS enum__prompts_v_version_content_type;
+```
+
+`pnpm seed`'s subsequent `drizzle-kit push` then recreated `content_type_id` /
+`content_type_uses_steps` (and the versions-table equivalents) as fresh relationship columns with
+FKs to `content_types(id)`. This was independently verified (twice) against `information_schema`,
+`pg_constraint`, and `pg_indexes` to exactly match the shape of the sibling `subject_id` FK column
+(same nullability, `ON DELETE SET NULL` rule, index naming convention) — no orphaned types, no
+unexpected data loss. Only the 2 known pre-launch test prompts (`Golden Hour Overlook`, `Studio to
+Tokyo Street Relocate`) lost their `contentType` value, which the plan had already anticipated and
+which was manually re-fixed via the Admin UI in the same task.
+
+**Verified safe after the fact, but the process was wrong:** no backup/snapshot was taken before
+running destructive DDL against the live production database, and the deviation from the plan
+(which assumed push would apply quietly) wasn't paused and confirmed with the user before running.
+Going forward for this project:
+
+- **Any raw DDL against `promptgalaxy_prod` must pause and get explicit user confirmation first** —
+  even when the person/agent about to run it believes it's low-risk. No more silent schema
+  deviations from the plan.
+- **Before scaling past the current pre-launch/test-data stage, move off `drizzle-kit push` mode
+  and onto Payload's tracked migrations** (`payload migrate:create` / `payload migrate` — the
+  `payload_migrations` table already exists in the DB, currently unused). Push mode is fine for a
+  single-developer pre-launch project with a handful of test rows; it stops being fine once real
+  content/users exist, since every "yes/no" schema-shape decision becomes unaskable in an
+  automated/CI context and destructive-by-default (push mode's failure mode for an ambiguous change
+  is "guess," not "refuse").
+- Take a quick `pg_dump` before any future schema change that isn't a pure additive column — the DB
+  is tiny right now, so this costs nothing but pays for itself the first time a push guesses wrong
+  on real data.
+
 ---
 
 ## Suggested order when we do this
