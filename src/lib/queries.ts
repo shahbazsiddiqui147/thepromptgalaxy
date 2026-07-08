@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { getPayloadClient } from './payload-client'
 import type { Subject, ArtStyle, Tool, Prompt } from '@/payload-types'
 
@@ -30,7 +31,7 @@ export async function getTools(): Promise<Tool[]> {
   return result.docs
 }
 
-export async function getSubjectBySlug(slug: string): Promise<Subject | null> {
+export const getSubjectBySlug = cache(async (slug: string): Promise<Subject | null> => {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'subjects',
@@ -38,9 +39,9 @@ export async function getSubjectBySlug(slug: string): Promise<Subject | null> {
     limit: 1,
   })
   return result.docs[0] ?? null
-}
+})
 
-export async function getArtStyleBySlug(slug: string): Promise<ArtStyle | null> {
+export const getArtStyleBySlug = cache(async (slug: string): Promise<ArtStyle | null> => {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'art-styles',
@@ -48,9 +49,9 @@ export async function getArtStyleBySlug(slug: string): Promise<ArtStyle | null> 
     limit: 1,
   })
   return result.docs[0] ?? null
-}
+})
 
-export async function getToolBySlug(slug: string): Promise<Tool | null> {
+export const getToolBySlug = cache(async (slug: string): Promise<Tool | null> => {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'tools',
@@ -58,7 +59,7 @@ export async function getToolBySlug(slug: string): Promise<Tool | null> {
     limit: 1,
   })
   return result.docs[0] ?? null
-}
+})
 
 export async function getPromptsBySubject(subjectId: number): Promise<Prompt[]> {
   const payload = await getPayloadClient()

@@ -21,6 +21,7 @@ export async function generateMetadata({
   return {
     title: subject.name,
     description: subject.description || `Browse every ${subject.name} prompt in the library.`,
+    alternates: { canonical: `https://thepromptgalaxy.com/${subject.slug}/` },
   }
 }
 
