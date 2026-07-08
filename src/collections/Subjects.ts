@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { autoSlugHook } from '@/lib/autoSlug'
 
 // Admin controls the Subject list here — adding "Wedding" or "Pets" later
 // requires zero code changes, just a new entry in this collection.
@@ -12,6 +13,9 @@ export const Subjects: CollectionConfig = {
   access: {
     read: () => true,
   },
+  hooks: {
+    beforeValidate: [autoSlugHook('name')],
+  },
   fields: [
     {
       name: 'name',
@@ -24,7 +28,7 @@ export const Subjects: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: { description: 'URL-safe identifier, e.g. "real-estate"' },
+      admin: { description: 'Auto-generated from Name if left blank. URL-safe identifier, e.g. "real-estate"' },
     },
     {
       name: 'description',

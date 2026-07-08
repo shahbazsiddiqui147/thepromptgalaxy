@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { revalidatePath } from 'next/cache'
+import { autoSlugHook } from '@/lib/autoSlug'
 
 export const Prompts: CollectionConfig = {
   slug: 'prompts',
@@ -19,7 +20,13 @@ export const Prompts: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, unique: true },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: { description: 'Auto-generated from Title if left blank.' },
+    },
 
     {
       name: 'subject',
@@ -146,6 +153,7 @@ export const Prompts: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeValidate: [autoSlugHook('title')],
     beforeChange: [
       async ({ data, req, originalDoc }) => {
         const contentTypeRef = data.contentType ?? originalDoc?.contentType

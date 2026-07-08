@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { autoSlugHook } from '@/lib/autoSlug'
 
 export const ContentTypes: CollectionConfig = {
   slug: 'content-types',
@@ -9,6 +10,9 @@ export const ContentTypes: CollectionConfig = {
   },
   access: {
     read: () => true,
+  },
+  hooks: {
+    beforeValidate: [autoSlugHook('name')],
   },
   fields: [
     {
@@ -22,6 +26,7 @@ export const ContentTypes: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      admin: { description: 'Auto-generated from Name if left blank.' },
     },
     {
       name: 'usesSteps',
