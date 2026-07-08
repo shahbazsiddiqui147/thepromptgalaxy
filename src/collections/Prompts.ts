@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 export const Prompts: CollectionConfig = {
   slug: 'prompts',
@@ -158,6 +159,25 @@ export const Prompts: CollectionConfig = {
           data.contentTypeUsesSteps = Boolean(contentType?.usesSteps)
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        const subject =
+          typeof doc.subject === 'object'
+            ? doc.subject
+            : await req.payload.findByID({ collection: 'subjects', id: doc.subject })
+        const artStyle =
+          typeof doc.artStyle === 'object'
+            ? doc.artStyle
+            : await req.payload.findByID({ collection: 'art-styles', id: doc.artStyle })
+
+        revalidatePath('/')
+        revalidatePath(`/${subject.slug}/`)
+        revalidatePath(`/${subject.slug}/${artStyle.slug}/`)
+        revalidatePath(`/${subject.slug}/${artStyle.slug}/${doc.slug}/`)
+        revalidatePath(`/style/${artStyle.slug}/`)
+        revalidatePath('/chains/')
       },
     ],
   },
