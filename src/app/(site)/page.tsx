@@ -12,6 +12,9 @@ export default async function HomePage() {
     getChainPrompts(),
   ])
 
+  const chainIds = new Set(chainPrompts.map((p) => p.id))
+  const featuredPrompts = recentPrompts.filter((p) => !chainIds.has(p.id))
+
   return (
     <div className="wrap" style={{ padding: '48px 24px' }}>
       <section style={{ marginBottom: 48 }}>
@@ -32,7 +35,7 @@ export default async function HomePage() {
           FEATURED PROMPTS
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-          {recentPrompts.map((p) => (
+          {featuredPrompts.map((p) => (
             <PromptCard key={p.id} prompt={p} />
           ))}
         </div>
