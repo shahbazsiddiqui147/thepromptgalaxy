@@ -4,7 +4,10 @@ import { anton, archivo, jetbrainsMono } from './fonts'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'The Prompt Galaxy',
+  title: {
+    default: 'The Prompt Galaxy',
+    template: '%s — The Prompt Galaxy',
+  },
   description: 'Every look, every tool, charted in one place.',
 }
 
