@@ -10,6 +10,7 @@ import { Media } from './collections/Media'
 import { Subjects } from './collections/Subjects'
 import { ArtStyles } from './collections/ArtStyles'
 import { Tools } from './collections/Tools'
+import { ContentTypes } from './collections/ContentTypes'
 import { Prompts } from './collections/Prompts'
 
 const filename = fileURLToPath(import.meta.url)
@@ -35,7 +36,7 @@ export default buildConfig({
       titleSuffix: ' — The Prompt Galaxy Admin',
     },
   },
-  collections: [Users, Media, Subjects, ArtStyles, Tools, Prompts],
+  collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts],
   editor: lexicalEditor(),
   secret: payloadSecret,
   typescript: {

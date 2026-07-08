@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 export const Prompts: CollectionConfig = {
   slug: 'prompts',
@@ -44,13 +45,19 @@ export const Prompts: CollectionConfig = {
     },
     {
       name: 'contentType',
-      type: 'select',
+      type: 'relationship',
+      relationTo: 'content-types',
       required: true,
-      options: [
-        { label: 'Single-frame', value: 'single' },
-        { label: 'Chain', value: 'chain' },
-      ],
-      defaultValue: 'single',
+      hasMany: false,
+    },
+    {
+      name: 'contentTypeUsesSteps',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        hidden: true,
+        description: 'Synced automatically from the selected Content Type — not editable directly.',
+      },
     },
 
     {
@@ -75,7 +82,7 @@ export const Prompts: CollectionConfig = {
       type: 'textarea',
       admin: {
         description: 'The full copyable prompt text.',
-        condition: (data) => data.contentType === 'single',
+        condition: (data) => !data.contentTypeUsesSteps,
       },
     },
 
@@ -84,7 +91,7 @@ export const Prompts: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Ordered steps — each carries context forward from the last.',
-        condition: (data) => data.contentType === 'chain',
+        condition: (data) => Boolean(data.contentTypeUsesSteps),
       },
       fields: [
         { name: 'label', type: 'text', required: true },
@@ -99,7 +106,7 @@ export const Prompts: CollectionConfig = {
       type: 'array',
       admin: {
         description: 'Result image variations shown in the gallery.',
-        condition: (data) => data.contentType === 'single',
+        condition: (data) => !data.contentTypeUsesSteps,
       },
       fields: [
         { name: 'image', type: 'upload', relationTo: 'media', required: true },
@@ -138,4 +145,51 @@ export const Prompts: CollectionConfig = {
       hasMany: true,
     },
   ],
+  hooks: {
+    beforeChange: [
+      async ({ data, req, originalDoc }) => {
+        const contentTypeRef = data.contentType ?? originalDoc?.contentType
+        if (contentTypeRef) {
+          const contentTypeId =
+            typeof contentTypeRef === 'object' ? contentTypeRef.id : contentTypeRef
+          const contentType = await req.payload.findByID({
+            collection: 'content-types',
+            id: contentTypeId,
+          })
+          data.contentTypeUsesSteps = Boolean(contentType?.usesSteps)
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        try {
+          const subject =
+            typeof doc.subject === 'object'
+              ? doc.subject
+              : await req.payload.findByID({ collection: 'subjects', id: doc.subject })
+          const artStyle =
+            typeof doc.artStyle === 'object'
+              ? doc.artStyle
+              : await req.payload.findByID({ collection: 'art-styles', id: doc.artStyle })
+
+          revalidatePath('/')
+          revalidatePath(`/${subject.slug}/`)
+          revalidatePath(`/${subject.slug}/${artStyle.slug}/`)
+          revalidatePath(`/${subject.slug}/${artStyle.slug}/${doc.slug}/`)
+          revalidatePath(`/style/${artStyle.slug}/`)
+          revalidatePath('/chains/')
+
+          const tools = Array.isArray(doc.tools) ? doc.tools : []
+          for (const t of tools) {
+            const tool =
+              typeof t === 'object' ? t : await req.payload.findByID({ collection: 'tools', id: t })
+            if (tool?.slug) revalidatePath(`/tool/${tool.slug}/`)
+          }
+        } catch (err) {
+          req.payload.logger.error({ err, msg: 'afterChange revalidation failed for prompt', docId: doc.id })
+        }
+      },
+    ],
+  },
 }
