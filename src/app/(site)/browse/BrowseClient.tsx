@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { PromptCard } from '@/components/PromptCard'
-import type { Prompt, Subject, ArtStyle, Tool } from '@/payload-types'
+import type { Prompt, Subject, Tool } from '@/payload-types'
 
 export function BrowseClient({
   prompts,
@@ -42,6 +42,7 @@ export function BrowseClient({
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, margin: '16px 0' }}>
         <button
           onClick={() => setActiveSubject('All')}
+          aria-pressed={activeSubject === 'All'}
           style={{
             padding: '8px 16px',
             border: `1px solid ${activeSubject === 'All' ? 'var(--amber)' : 'var(--border)'}`,
@@ -56,6 +57,7 @@ export function BrowseClient({
           <button
             key={s.id}
             onClick={() => setActiveSubject(s.slug)}
+            aria-pressed={activeSubject === s.slug}
             style={{
               padding: '8px 16px',
               border: `1px solid ${activeSubject === s.slug ? 'var(--amber)' : 'var(--border)'}`,
@@ -74,6 +76,7 @@ export function BrowseClient({
           <button
             key={t.id}
             onClick={() => toggleTool(t.slug)}
+            aria-pressed={activeTools.has(t.slug)}
             style={{
               padding: '7px 14px',
               borderRadius: 999,
