@@ -28,6 +28,8 @@ export function FaqAccordion({ faqs }: { faqs: Faq[] }) {
         <div key={f.question} style={{ borderBottom: '1px solid var(--border)' }}>
           <button
             onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            aria-expanded={openIndex === i}
+            aria-controls={`faq-answer-${i}`}
             style={{
               width: '100%',
               display: 'flex',
@@ -46,7 +48,7 @@ export function FaqAccordion({ faqs }: { faqs: Faq[] }) {
             <span style={{ color: 'var(--amber)' }}>{openIndex === i ? '−' : '+'}</span>
           </button>
           {openIndex === i && (
-            <p style={{ color: 'var(--fade)', fontSize: 13.5, lineHeight: 1.55, margin: '0 4px 16px' }}>
+            <p id={`faq-answer-${i}`} style={{ color: 'var(--fade)', fontSize: 13.5, lineHeight: 1.55, margin: '0 4px 16px' }}>
               {f.answer}
             </p>
           )}
