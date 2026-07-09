@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { getPromptBySlug } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import type { Subject, ArtStyle, Tool } from '@/payload-types'
+import type { Subject, ArtStyle, Tool, Media } from '@/payload-types'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -104,6 +105,32 @@ export default async function PromptPage({
                   <span style={{ color: 'var(--fade)', fontSize: 12.5 }}>{step.note}</span>
                 </div>
                 <CopyBox text={step.promptText} />
+                {(() => {
+                  const stepImage = typeof step.exampleResult === 'object' ? (step.exampleResult as Media | null) : null
+                  const stepImageUrl = stepImage?.sizes?.card?.url || stepImage?.url
+                  if (!stepImageUrl) return null
+                  return (
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: 160,
+                        height: 160,
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        marginTop: 10,
+                        background: 'var(--ink-panel)',
+                      }}
+                    >
+                      <Image
+                        src={stepImageUrl}
+                        alt={stepImage?.alt || step.label}
+                        fill
+                        sizes="160px"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
+                  )
+                })()}
               </div>
             ))}
           </div>
@@ -114,6 +141,47 @@ export default async function PromptPage({
             PROMPT
           </div>
           {prompt.promptText && <CopyBox text={prompt.promptText} />}
+          {(prompt.exampleResults ?? []).length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
+                EXAMPLE RESULTS
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
+                {(prompt.exampleResults ?? []).map((result, i) => {
+                  const image = typeof result.image === 'object' ? (result.image as Media | null) : null
+                  const imageUrl = image?.sizes?.card?.url || image?.url
+                  if (!imageUrl) return null
+                  return (
+                    <figure key={i} style={{ margin: 0 }}>
+                      <div
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          aspectRatio: '1 / 1',
+                          borderRadius: 4,
+                          overflow: 'hidden',
+                          background: 'var(--ink-panel)',
+                        }}
+                      >
+                        <Image
+                          src={imageUrl}
+                          alt={image?.alt || prompt.title}
+                          fill
+                          sizes="200px"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      </div>
+                      {result.note && (
+                        <figcaption style={{ fontSize: 11.5, color: 'var(--fade)', marginTop: 6 }}>
+                          {result.note}
+                        </figcaption>
+                      )}
+                    </figure>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

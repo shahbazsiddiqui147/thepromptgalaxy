@@ -1,10 +1,13 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import type { Prompt, Subject, ArtStyle } from '@/payload-types'
+import type { Prompt, Subject, ArtStyle, Media } from '@/payload-types'
 
 export function PromptCard({ prompt }: { prompt: Prompt }) {
   const subject = prompt.subject as Subject
   const artStyle = prompt.artStyle as ArtStyle
   const href = `/${subject.slug}/${artStyle.slug}/${prompt.slug}/`
+  const coverImage = typeof prompt.coverImage === 'object' ? (prompt.coverImage as Media | null) : null
+  const coverImageUrl = coverImage?.sizes?.card?.url || coverImage?.url
 
   return (
     <article
@@ -19,9 +22,20 @@ export function PromptCard({ prompt }: { prompt: Prompt }) {
         <div
           style={{
             height: 130,
+            position: 'relative',
             background: `linear-gradient(135deg, ${artStyle.colorHex ?? '#5C7A82'}55, var(--ink))`,
           }}
-        />
+        >
+          {coverImageUrl && (
+            <Image
+              src={coverImageUrl}
+              alt={coverImage?.alt || prompt.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 240px"
+              style={{ objectFit: 'cover' }}
+            />
+          )}
+        </div>
         <div style={{ padding: '14px 14px 16px' }}>
           <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--ink)', marginBottom: 4 }}>
             {prompt.title}
