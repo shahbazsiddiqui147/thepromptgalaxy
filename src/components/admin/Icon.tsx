@@ -3,8 +3,8 @@ export function Icon() {
     <div
       aria-hidden="true"
       style={{
-        width: '100%',
-        height: '100%',
+        width: 14,
+        height: 14,
         borderRadius: '50%',
         background: '#c9a227',
         display: 'flex',
@@ -12,7 +12,7 @@ export function Icon() {
         justifyContent: 'center',
         fontFamily: 'Georgia, serif',
         fontWeight: 700,
-        fontSize: '0.6em',
+        fontSize: 8,
         color: '#12141f',
       }}
     >
