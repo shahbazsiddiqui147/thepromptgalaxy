@@ -73,6 +73,12 @@ export const Prompts: CollectionConfig = {
               },
             },
 
+            { name: 'blurb', type: 'textarea', required: true },
+          ],
+        },
+        {
+          label: 'Prompt Content',
+          fields: [
             {
               name: 'referenceRequired',
               type: 'checkbox',
@@ -88,12 +94,6 @@ export const Prompts: CollectionConfig = {
               },
             },
 
-            { name: 'blurb', type: 'textarea', required: true },
-          ],
-        },
-        {
-          label: 'Prompt Content',
-          fields: [
             {
               name: 'promptText',
               type: 'textarea',
