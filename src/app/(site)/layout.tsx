@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { anton, archivo, jetbrainsMono } from './fonts'
+import { SearchForm } from '@/components/SearchForm'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               </Link>
             ))}
           </nav>
+          <SearchForm />
         </header>
         <main>{children}</main>
         <div className="constellation" />

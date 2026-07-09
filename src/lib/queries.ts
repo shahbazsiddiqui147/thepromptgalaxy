@@ -153,3 +153,22 @@ export const getPromptBySlug = cache(async (slug: string): Promise<Prompt | null
   })
   return result.docs[0] ?? null
 })
+
+export async function searchPrompts(query: string): Promise<Prompt[]> {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'prompts',
+    where: {
+      and: [
+        PUBLISHED,
+        {
+          or: [{ title: { like: query } }, { blurb: { like: query } }],
+        },
+      ],
+    },
+    depth: 2,
+    sort: '-createdAt',
+    limit: 100,
+  })
+  return result.docs
+}
