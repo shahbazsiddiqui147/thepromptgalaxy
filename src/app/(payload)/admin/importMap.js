@@ -1,3 +1,4 @@
+import { StepRowLabel as StepRowLabel_d80f7a11e660137d5eae10e03c064f66 } from '../../../components/admin/StepRowLabel'
 import { Icon as Icon_dfe4008080d895d460898c3a6155e9ba } from '../../../components/admin/Icon'
 import { Logo as Logo_91a09b539d3c86b0aebf520e7564ce08 } from '../../../components/admin/Logo'
 import { ViewSiteAction as ViewSiteAction_65df70cfa93dd124bb8491113ecb5b5a } from '../../../components/admin/ViewSiteAction'
@@ -5,6 +6,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/StepRowLabel#StepRowLabel": StepRowLabel_d80f7a11e660137d5eae10e03c064f66,
   "/components/admin/Icon#Icon": Icon_dfe4008080d895d460898c3a6155e9ba,
   "/components/admin/Logo#Logo": Logo_91a09b539d3c86b0aebf520e7564ce08,
   "/components/admin/ViewSiteAction#ViewSiteAction": ViewSiteAction_65df70cfa93dd124bb8491113ecb5b5a,

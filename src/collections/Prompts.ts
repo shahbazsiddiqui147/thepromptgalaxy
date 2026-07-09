@@ -109,12 +109,36 @@ export const Prompts: CollectionConfig = {
               admin: {
                 description: 'Ordered steps — each carries context forward from the last.',
                 condition: (data) => Boolean(data.contentTypeUsesSteps),
+                initCollapsed: true,
+                components: {
+                  RowLabel: '/components/admin/StepRowLabel#StepRowLabel',
+                },
               },
               fields: [
-                { name: 'label', type: 'text', required: true },
-                { name: 'note', type: 'text', required: true },
-                { name: 'promptText', type: 'textarea', required: true },
-                { name: 'exampleResult', type: 'upload', relationTo: 'media' },
+                {
+                  name: 'label',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'Short name for this step, e.g. "Base" or "Relocate" — shown above the step number.' },
+                },
+                {
+                  name: 'note',
+                  type: 'text',
+                  required: true,
+                  admin: { description: 'One-line explanation of what this step does — shown next to the step number on the site.' },
+                },
+                {
+                  name: 'promptText',
+                  type: 'textarea',
+                  required: true,
+                  admin: { description: 'The actual prompt text for this step.' },
+                },
+                {
+                  name: 'exampleResult',
+                  type: 'upload',
+                  relationTo: 'media',
+                  admin: { description: "Optional example image showing this step's result." },
+                },
               ],
             },
 
