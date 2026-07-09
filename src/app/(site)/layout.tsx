@@ -11,15 +11,44 @@ export const metadata: Metadata = {
   description: 'Every look, every tool, charted in one place.',
 }
 
+const navLinks = [
+  { href: '/style/', label: 'Styles' },
+  { href: '/tool/', label: 'Tools' },
+  { href: '/chains/', label: 'Chains' },
+  { href: '/browse/', label: 'Browse' },
+]
+
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${anton.variable} ${archivo.variable} ${jetbrainsMono.variable}`}>
       <body>
         <div className="constellation" />
-        <header className="wrap" style={{ padding: '16px 24px' }}>
+        <header
+          className="wrap"
+          style={{
+            padding: '16px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
           <Link href="/" style={{ color: 'var(--paper)', textDecoration: 'none' }} className="display">
             THE PROMPT GALAXY
           </Link>
+          <nav style={{ display: 'flex', gap: 20 }}>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="mono"
+                style={{ color: 'var(--paper)', textDecoration: 'none', fontSize: 13 }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </header>
         <main>{children}</main>
         <div className="constellation" />
