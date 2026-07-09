@@ -23,10 +23,27 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         </header>
         <main>{children}</main>
         <div className="constellation" />
-        <footer className="wrap" style={{ padding: '20px 24px 40px' }}>
-          <p className="mono" style={{ color: 'var(--fade)', fontSize: 11 }}>
+        <footer
+          className="wrap"
+          style={{
+            padding: '20px 24px 40px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <p className="mono" style={{ color: 'var(--fade)', fontSize: 11, margin: 0 }}>
             &copy; {new Date().getFullYear()} The Prompt Galaxy
           </p>
+          <Link
+            href="/admin/login/"
+            className="mono"
+            style={{ color: 'var(--fade)', fontSize: 11, textDecoration: 'none', opacity: 0.6 }}
+          >
+            Admin
+          </Link>
         </footer>
       </body>
     </html>

@@ -40,6 +40,7 @@ export default buildConfig({
         Logo: '/components/admin/Logo#Logo',
         Icon: '/components/admin/Icon#Icon',
       },
+      actions: ['/components/admin/ViewSiteAction#ViewSiteAction'],
     },
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts],
