@@ -20,9 +20,9 @@ export function BrowseClient({
     return prompts.filter((p) => {
       const subject = p.subject as Subject
       const promptTools = p.tools as Tool[]
-      const subjectMatch = activeSubject === 'All' || subject.slug === activeSubject
+      const subjectMatch = activeSubject === 'All' || (subject.slug ?? '') === activeSubject
       const toolMatch =
-        activeTools.size === 0 || promptTools.some((t) => activeTools.has(t.slug))
+        activeTools.size === 0 || promptTools.some((t) => activeTools.has(t.slug ?? ''))
       return subjectMatch && toolMatch
     })
   }, [prompts, activeSubject, activeTools])
@@ -56,13 +56,13 @@ export function BrowseClient({
         {subjects.map((s) => (
           <button
             key={s.id}
-            onClick={() => setActiveSubject(s.slug)}
-            aria-pressed={activeSubject === s.slug}
+            onClick={() => setActiveSubject(s.slug ?? '')}
+            aria-pressed={activeSubject === (s.slug ?? '')}
             style={{
               padding: '8px 16px',
-              border: `1px solid ${activeSubject === s.slug ? 'var(--amber)' : 'var(--border)'}`,
-              background: activeSubject === s.slug ? 'var(--amber)' : 'transparent',
-              color: activeSubject === s.slug ? 'var(--ink)' : 'var(--paper)',
+              border: `1px solid ${activeSubject === (s.slug ?? '') ? 'var(--amber)' : 'var(--border)'}`,
+              background: activeSubject === (s.slug ?? '') ? 'var(--amber)' : 'transparent',
+              color: activeSubject === (s.slug ?? '') ? 'var(--ink)' : 'var(--paper)',
               cursor: 'pointer',
             }}
           >
@@ -75,14 +75,14 @@ export function BrowseClient({
         {tools.map((t) => (
           <button
             key={t.id}
-            onClick={() => toggleTool(t.slug)}
-            aria-pressed={activeTools.has(t.slug)}
+            onClick={() => toggleTool(t.slug ?? '')}
+            aria-pressed={activeTools.has(t.slug ?? '')}
             style={{
               padding: '7px 14px',
               borderRadius: 999,
-              border: `1px solid ${activeTools.has(t.slug) ? 'var(--steel)' : 'var(--border)'}`,
-              background: activeTools.has(t.slug) ? 'rgba(92,122,130,0.18)' : 'transparent',
-              color: activeTools.has(t.slug) ? '#BFD3D7' : 'var(--fade)',
+              border: `1px solid ${activeTools.has(t.slug ?? '') ? 'var(--steel)' : 'var(--border)'}`,
+              background: activeTools.has(t.slug ?? '') ? 'rgba(92,122,130,0.18)' : 'transparent',
+              color: activeTools.has(t.slug ?? '') ? '#BFD3D7' : 'var(--fade)',
               cursor: 'pointer',
             }}
           >
