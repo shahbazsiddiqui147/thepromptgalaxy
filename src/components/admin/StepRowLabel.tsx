@@ -8,6 +8,6 @@ type StepRowData = {
 
 export function StepRowLabel() {
   const { data, rowNumber } = useRowLabel<StepRowData>()
-  const stepNumber = rowNumber ?? 1
+  const stepNumber = (rowNumber ?? 0) + 1
   return <div>{data?.label ? `${stepNumber}. ${data.label}` : `Step ${stepNumber}`}</div>
 }
