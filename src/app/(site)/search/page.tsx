@@ -12,7 +12,8 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>
 }) {
   const { q } = await searchParams
-  const query = q?.trim() ?? ''
+  const rawQuery = Array.isArray(q) ? q[0] : q
+  const query = rawQuery?.trim() ?? ''
   const prompts = query ? await searchPrompts(query) : []
 
   return (

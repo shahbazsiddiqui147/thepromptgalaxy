@@ -154,15 +154,20 @@ export const getPromptBySlug = cache(async (slug: string): Promise<Prompt | null
   return result.docs[0] ?? null
 })
 
+function escapeLikeQuery(value: string): string {
+  return value.replace(/[%_\\]/g, '\\$&')
+}
+
 export async function searchPrompts(query: string): Promise<Prompt[]> {
   const payload = await getPayloadClient()
+  const escaped = escapeLikeQuery(query)
   const result = await payload.find({
     collection: 'prompts',
     where: {
       and: [
         PUBLISHED,
         {
-          or: [{ title: { like: query } }, { blurb: { like: query } }],
+          or: [{ title: { like: escaped } }, { blurb: { like: escaped } }],
         },
       ],
     },
