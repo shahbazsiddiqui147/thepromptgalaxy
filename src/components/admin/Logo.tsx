@@ -6,7 +6,7 @@ export function Logo() {
         fontWeight: 700,
         fontSize: 28,
         letterSpacing: '0.02em',
-        color: '#12141f',
+        color: 'var(--theme-text)',
         textAlign: 'center',
       }}
     >
