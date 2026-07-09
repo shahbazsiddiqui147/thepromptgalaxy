@@ -35,6 +35,12 @@ export default buildConfig({
     meta: {
       titleSuffix: ' — The Prompt Galaxy Admin',
     },
+    components: {
+      graphics: {
+        Logo: '/components/admin/Logo#Logo',
+        Icon: '/components/admin/Icon#Icon',
+      },
+    },
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts],
   editor: lexicalEditor(),
