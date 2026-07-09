@@ -1,7 +1,7 @@
 export function ViewSiteAction() {
   return (
     <a
-      href="https://thepromptgalaxy.com/"
+      href="/"
       target="_blank"
       rel="noopener noreferrer"
       style={{

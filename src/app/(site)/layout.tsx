@@ -40,7 +40,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           <Link
             href="/admin/login/"
             className="mono"
-            style={{ color: 'var(--fade)', fontSize: 11, textDecoration: 'none', opacity: 0.6 }}
+            style={{ color: 'var(--fade)', fontSize: 11, textDecoration: 'none' }}
           >
             Admin
           </Link>
