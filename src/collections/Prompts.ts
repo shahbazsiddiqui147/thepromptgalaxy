@@ -177,8 +177,13 @@ export const Prompts: CollectionConfig = {
               type: 'group',
               fields: [
                 { name: 'heading', type: 'text' },
-                { name: 'paragraphs', type: 'array', fields: [{ name: 'text', type: 'textarea' }] },
-                { name: 'tips', type: 'array', fields: [{ name: 'text', type: 'text' }] },
+                {
+                  name: 'body',
+                  type: 'richText',
+                  admin: {
+                    description: 'The long-form "why this prompt works" content. Use headings, bullet lists, and bold text as needed.',
+                  },
+                },
               ],
             },
             {
@@ -205,6 +210,54 @@ export const Prompts: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'seo',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+        description: 'Overrides the auto-generated page title/description shown in search results. Leave blank to fall back to Title/Blurb.',
+      },
+      fields: [
+        {
+          name: 'metaTitle',
+          type: 'text',
+          maxLength: 60,
+          admin: { description: 'Aim for 50-60 characters.' },
+        },
+        {
+          name: 'metaDescription',
+          type: 'textarea',
+          maxLength: 160,
+          admin: { description: 'Aim for 150-160 characters.' },
+        },
+      ],
+    },
+    {
+      name: 'verification',
+      type: 'group',
+      admin: {
+        position: 'sidebar',
+        description: "Expert review signals shown on the page for E-E-A-T (Google's Experience-Expertise-Authoritativeness-Trust signals).",
+      },
+      fields: [
+        {
+          name: 'verifiedBy',
+          type: 'relationship',
+          relationTo: 'users',
+          hasMany: false,
+          admin: { description: 'Which admin user verified this content, if any.' },
+        },
+        {
+          name: 'lastVerified',
+          type: 'date',
+          admin: {
+            readOnly: true,
+            description: 'Automatically set to today whenever this document is saved.',
+            date: { displayFormat: 'MMM d, yyyy' },
+          },
+        },
+      ],
+    },
   ],
   hooks: {
     beforeValidate: [autoSlugHook('title')],
@@ -220,6 +273,10 @@ export const Prompts: CollectionConfig = {
           })
           data.contentTypeUsesSteps = Boolean(contentType?.usesSteps)
         }
+        return data
+      },
+      ({ data }) => {
+        data.lastVerified = new Date().toISOString()
         return data
       },
     ],
