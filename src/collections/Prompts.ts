@@ -107,7 +107,7 @@ export const Prompts: CollectionConfig = {
               name: 'steps',
               type: 'array',
               admin: {
-                description: 'Ordered steps — each carries context forward from the last.',
+                description: 'Ordered steps — each carries context forward from the last. Steps are collapsed by default, including one you just added — click a step to expand it.',
                 condition: (data) => Boolean(data.contentTypeUsesSteps),
                 initCollapsed: true,
                 components: {
@@ -119,7 +119,7 @@ export const Prompts: CollectionConfig = {
                   name: 'label',
                   type: 'text',
                   required: true,
-                  admin: { description: 'Short name for this step, e.g. "Base" or "Relocate" — shown above the step number.' },
+                  admin: { description: 'Short name for this step, e.g. "Base" or "Relocate" — shown next to the step number.' },
                 },
                 {
                   name: 'note',
