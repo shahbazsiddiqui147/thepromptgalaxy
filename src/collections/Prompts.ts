@@ -29,7 +29,6 @@ export const Prompts: CollectionConfig = {
             {
               name: 'slug',
               type: 'text',
-              required: true,
               unique: true,
               admin: { description: 'Auto-generated from Title if left blank.' },
             },

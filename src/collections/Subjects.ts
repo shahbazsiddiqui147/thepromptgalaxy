@@ -26,7 +26,6 @@ export const Subjects: CollectionConfig = {
     {
       name: 'slug',
       type: 'text',
-      required: true,
       unique: true,
       admin: { description: 'Auto-generated from Name if left blank. URL-safe identifier, e.g. "real-estate"' },
     },
