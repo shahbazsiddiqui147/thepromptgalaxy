@@ -74,6 +74,15 @@ export const Prompts: CollectionConfig = {
             },
 
             { name: 'blurb', type: 'textarea', required: true },
+            {
+              name: 'coverImage',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description:
+                  'Main thumbnail shown wherever this prompt is listed (homepage, archive grids, browse page). Falls back to a color gradient if left blank.',
+              },
+            },
           ],
         },
         {
