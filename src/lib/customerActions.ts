@@ -2,6 +2,7 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import type { Payload } from 'payload'
 import { getPayloadClient } from '@/lib/payload-client'
 import { CUSTOMER_COOKIE_NAME } from '@/lib/customerAuth'
 
@@ -29,6 +30,38 @@ async function setCustomerSessionCookie(token: string, exp?: number | null): Pro
   })
 }
 
+// Shared by signup (post-create) and login: authenticates against the
+// Customers collection, establishes the session cookie on success, and
+// redirects to `failureRedirect` on any failure (bad credentials, no token).
+// Never returns on failure or success — always redirects.
+async function loginAndEstablishSession(
+  payload: Payload,
+  email: string,
+  password: string,
+  failureRedirect: string,
+): Promise<never> {
+  let token: string | undefined
+  let exp: number | undefined
+  try {
+    const result = await payload.login({
+      collection: 'customers',
+      data: { email, password },
+    })
+    token = result.token
+    exp = result.exp
+  } catch (err) {
+    console.error('customer login failed', err)
+    redirect(failureRedirect)
+  }
+
+  if (!token) {
+    redirect(failureRedirect)
+  }
+
+  await setCustomerSessionCookie(token, exp)
+  redirect('/account')
+}
+
 export async function signupAction(formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim()
   const email = String(formData.get('email') ?? '').trim().toLowerCase()
@@ -51,36 +84,19 @@ export async function signupAction(formData: FormData): Promise<void> {
       collection: 'customers',
       data: { name, email, password },
     })
-  } catch {
+  } catch (err) {
     // Most likely cause: duplicate email (unique constraint on the auth
     // collection's email field). We don't have a reliable typed error code
     // from the Local API here, so treat any create failure as "email taken"
     // — the alternative (a generic failure message) would be less useful
     // for the overwhelmingly common case.
+    console.error('customer signup failed', err)
     redirect('/signup?error=email_taken')
   }
 
-  let token: string | undefined
-  let exp: number | undefined
-  try {
-    const result = await payload.login({
-      collection: 'customers',
-      data: { email, password },
-    })
-    token = result.token
-    exp = result.exp
-  } catch {
-    // Account was created but immediate login failed for some reason —
-    // send them to log in manually rather than erroring the whole flow.
-    redirect('/login?error=account_created')
-  }
-
-  if (!token) {
-    redirect('/login?error=account_created')
-  }
-
-  await setCustomerSessionCookie(token, exp)
-  redirect('/account')
+  // Account was created but immediate login failed for some reason — send
+  // them to log in manually rather than erroring the whole flow.
+  await loginAndEstablishSession(payload, email, password, '/login?error=account_created')
 }
 
 export async function loginAction(formData: FormData): Promise<void> {
@@ -93,25 +109,7 @@ export async function loginAction(formData: FormData): Promise<void> {
 
   const payload = await getPayloadClient()
 
-  let token: string | undefined
-  let exp: number | undefined
-  try {
-    const result = await payload.login({
-      collection: 'customers',
-      data: { email, password },
-    })
-    token = result.token
-    exp = result.exp
-  } catch {
-    redirect('/login?error=invalid_credentials')
-  }
-
-  if (!token) {
-    redirect('/login?error=invalid_credentials')
-  }
-
-  await setCustomerSessionCookie(token, exp)
-  redirect('/account')
+  await loginAndEstablishSession(payload, email, password, '/login?error=invalid_credentials')
 }
 
 export async function logoutAction(): Promise<void> {

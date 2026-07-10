@@ -38,7 +38,7 @@ export default async function AccountPage() {
           type="submit"
           className="mono"
           style={{
-            background: '#232640',
+            background: 'var(--ink-panel)',
             color: 'var(--paper)',
             border: '1px solid var(--border)',
             borderRadius: 4,
