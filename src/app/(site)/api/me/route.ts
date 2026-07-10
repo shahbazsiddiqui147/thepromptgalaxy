@@ -55,6 +55,19 @@ export async function POST(request: Request) {
   const currentIds = extractSavedPromptIds(current.savedPrompts)
 
   const alreadySaved = currentIds.includes(promptId)
+
+  // Only adding a new ID can hit the relationship's FK constraint (removing
+  // never inserts anything), so only validate existence on that path —
+  // a bogus/nonexistent promptId should be a clean 404, not an unhandled
+  // 500 from Postgres rejecting the write.
+  if (!alreadySaved) {
+    try {
+      await payload.findByID({ collection: 'prompts', id: promptId })
+    } catch {
+      return NextResponse.json({ error: 'prompt_not_found' }, { status: 404 })
+    }
+  }
+
   const nextIds = alreadySaved
     ? currentIds.filter((id) => id !== promptId)
     : [...new Set([...currentIds, promptId])]
