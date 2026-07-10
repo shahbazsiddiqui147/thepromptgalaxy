@@ -276,12 +276,22 @@ export const Prompts: CollectionConfig = {
         return data
       },
       ({ data, originalDoc }) => {
+        const currentGroup = data.verification as { verifiedBy?: unknown } | undefined
+        const originalGroup = (originalDoc as { verification?: { verifiedBy?: unknown } } | undefined)
+          ?.verification
+
         const currentVerifiedBy =
-          typeof data.verifiedBy === 'object' ? data.verifiedBy?.id : data.verifiedBy
+          typeof currentGroup?.verifiedBy === 'object' && currentGroup.verifiedBy !== null
+            ? (currentGroup.verifiedBy as { id?: unknown }).id
+            : currentGroup?.verifiedBy
         const originalVerifiedBy =
-          typeof originalDoc?.verifiedBy === 'object' ? originalDoc.verifiedBy?.id : originalDoc?.verifiedBy
+          typeof originalGroup?.verifiedBy === 'object' && originalGroup.verifiedBy !== null
+            ? (originalGroup.verifiedBy as { id?: unknown }).id
+            : originalGroup?.verifiedBy
+
         if (currentVerifiedBy && currentVerifiedBy !== originalVerifiedBy) {
-          data.lastVerified = new Date().toISOString()
+          if (!data.verification) data.verification = {}
+          ;(data.verification as { lastVerified?: string }).lastVerified = new Date().toISOString()
         }
         return data
       },
