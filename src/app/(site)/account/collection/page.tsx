@@ -16,7 +16,17 @@ export default async function CollectionPage() {
   if (!customer) redirect('/login')
 
   const savedIds = extractSavedPromptIds(customer.savedPrompts)
-  const prompts = await getPromptsByIds(savedIds)
+  const fetchedPrompts = await getPromptsByIds(savedIds)
+
+  // getPromptsByIds' `id IN (...)` query doesn't preserve input order, and
+  // savedIds is oldest-saved-first (new saves are appended) — reverse it so
+  // the most recently saved prompt shows first, and drop any id that no
+  // longer resolves to a published prompt (unpublished/deleted since saving).
+  const promptsById = new Map(fetchedPrompts.map((prompt) => [prompt.id, prompt]))
+  const prompts = [...savedIds]
+    .reverse()
+    .map((id) => promptsById.get(id))
+    .filter((prompt) => prompt !== undefined)
 
   return (
     <div className="wrap" style={{ padding: '24px 24px 56px' }}>
