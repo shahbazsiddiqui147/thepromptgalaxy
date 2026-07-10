@@ -21,7 +21,7 @@ export function PromptCard({ prompt }: { prompt: Prompt }) {
       <Link href={href} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div
           style={{
-            height: 130,
+            aspectRatio: '1 / 1',
             position: 'relative',
             background: `linear-gradient(135deg, ${artStyle.colorHex ?? '#5C7A82'}55, var(--ink))`,
           }}

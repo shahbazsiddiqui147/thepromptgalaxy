@@ -143,6 +143,18 @@ export async function getRecentPrompts(limit = 8): Promise<Prompt[]> {
   return result.docs
 }
 
+export async function getPromptsByIds(ids: number[]): Promise<Prompt[]> {
+  if (ids.length === 0) return []
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'prompts',
+    where: { and: [{ id: { in: ids } }, PUBLISHED] },
+    depth: 2,
+    limit: 100,
+  })
+  return result.docs
+}
+
 export const getPromptBySlug = cache(async (slug: string): Promise<Prompt | null> => {
   const payload = await getPayloadClient()
   const result = await payload.find({
@@ -153,3 +165,27 @@ export const getPromptBySlug = cache(async (slug: string): Promise<Prompt | null
   })
   return result.docs[0] ?? null
 })
+
+function escapeLikeQuery(value: string): string {
+  return value.replace(/[%_\\]/g, '\\$&')
+}
+
+export async function searchPrompts(query: string): Promise<Prompt[]> {
+  const payload = await getPayloadClient()
+  const escaped = escapeLikeQuery(query)
+  const result = await payload.find({
+    collection: 'prompts',
+    where: {
+      and: [
+        PUBLISHED,
+        {
+          or: [{ title: { like: escaped } }, { blurb: { like: escaped } }],
+        },
+      ],
+    },
+    depth: 2,
+    sort: '-createdAt',
+    limit: 100,
+  })
+  return result.docs
+}
