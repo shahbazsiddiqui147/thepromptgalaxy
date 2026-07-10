@@ -275,8 +275,14 @@ export const Prompts: CollectionConfig = {
         }
         return data
       },
-      ({ data }) => {
-        data.lastVerified = new Date().toISOString()
+      ({ data, originalDoc }) => {
+        const currentVerifiedBy =
+          typeof data.verifiedBy === 'object' ? data.verifiedBy?.id : data.verifiedBy
+        const originalVerifiedBy =
+          typeof originalDoc?.verifiedBy === 'object' ? originalDoc.verifiedBy?.id : originalDoc?.verifiedBy
+        if (currentVerifiedBy && currentVerifiedBy !== originalVerifiedBy) {
+          data.lastVerified = new Date().toISOString()
+        }
         return data
       },
     ],
