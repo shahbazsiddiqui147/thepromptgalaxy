@@ -37,5 +37,14 @@ export const Customers: CollectionConfig = {
       required: true,
       admin: { description: "The customer's display name." },
     },
+    {
+      name: 'savedPrompts',
+      type: 'relationship',
+      relationTo: 'prompts',
+      hasMany: true,
+      admin: {
+        description: 'Prompts this customer has saved to their personal collection.',
+      },
+    },
   ],
 }
