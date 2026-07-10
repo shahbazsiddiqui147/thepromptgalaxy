@@ -12,6 +12,7 @@ import { ArtStyles } from './collections/ArtStyles'
 import { Tools } from './collections/Tools'
 import { ContentTypes } from './collections/ContentTypes'
 import { Prompts } from './collections/Prompts'
+import { Customers } from './collections/Customers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -43,7 +44,7 @@ export default buildConfig({
       actions: ['/components/admin/ViewSiteAction#ViewSiteAction'],
     },
   },
-  collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts],
+  collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts, Customers],
   editor: lexicalEditor(),
   secret: payloadSecret,
   typescript: {
