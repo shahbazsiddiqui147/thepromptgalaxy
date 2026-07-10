@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { anton, archivo, jetbrainsMono } from './fonts'
 import { SearchForm } from '@/components/SearchForm'
+import { getCurrentCustomer } from '@/lib/customerAuth'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -19,7 +20,9 @@ const navLinks = [
   { href: '/browse/', label: 'Browse' },
 ]
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const customer = await getCurrentCustomer()
+
   return (
     <html lang="en" className={`${anton.variable} ${archivo.variable} ${jetbrainsMono.variable}`}>
       <body>
@@ -50,7 +53,16 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
               </Link>
             ))}
           </nav>
-          <SearchForm />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <SearchForm />
+            <Link
+              href={customer ? '/account' : '/login'}
+              className="mono"
+              style={{ color: 'var(--paper)', textDecoration: 'none', fontSize: 13 }}
+            >
+              {customer ? 'Account' : 'Log in'}
+            </Link>
+          </div>
         </header>
         <main>{children}</main>
         <div className="constellation" />
