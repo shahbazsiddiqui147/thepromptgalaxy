@@ -143,6 +143,18 @@ export async function getRecentPrompts(limit = 8): Promise<Prompt[]> {
   return result.docs
 }
 
+export async function getPromptsByIds(ids: number[]): Promise<Prompt[]> {
+  if (ids.length === 0) return []
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'prompts',
+    where: { and: [{ id: { in: ids } }, PUBLISHED] },
+    depth: 2,
+    limit: 100,
+  })
+  return result.docs
+}
+
 export const getPromptBySlug = cache(async (slug: string): Promise<Prompt | null> => {
   const payload = await getPayloadClient()
   const result = await payload.find({

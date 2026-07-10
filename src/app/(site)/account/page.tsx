@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getCurrentCustomer } from '@/lib/customerAuth'
 import { logoutAction } from '@/lib/customerActions'
@@ -32,6 +33,24 @@ export default async function AccountPage() {
           {customer.email}
         </p>
       </div>
+
+      <Link
+        href="/account/collection"
+        className="mono"
+        style={{
+          display: 'inline-block',
+          background: 'var(--ink-panel)',
+          color: 'var(--amber)',
+          border: '1px solid var(--border)',
+          borderRadius: 4,
+          padding: '9px 16px',
+          fontSize: 13,
+          textDecoration: 'none',
+          marginBottom: 16,
+        }}
+      >
+        My Collection
+      </Link>
 
       <form action={logoutAction}>
         <button

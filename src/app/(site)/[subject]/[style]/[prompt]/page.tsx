@@ -7,6 +7,7 @@ import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { SaveButton } from '@/components/SaveButton'
 import type { Subject, ArtStyle, Tool, Media } from '@/payload-types'
 
 export const revalidate = 3600
@@ -83,6 +84,10 @@ export default async function PromptPage({
             Reference image required{prompt.referenceNote ? ` — ${prompt.referenceNote}` : ''}
           </span>
         )}
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <SaveButton promptId={prompt.id} />
       </div>
 
       {prompt.verification?.lastVerified && (
