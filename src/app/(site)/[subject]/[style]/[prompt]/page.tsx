@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getPromptBySlug } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
@@ -27,8 +28,8 @@ export async function generateMetadata({
   const canonicalUrl = `https://thepromptgalaxy.com/${subject.slug}/${artStyle.slug}/${prompt.slug}/`
 
   return {
-    title: prompt.title,
-    description: prompt.quickAnswer || prompt.blurb,
+    title: prompt.seo?.metaTitle || prompt.title,
+    description: prompt.seo?.metaDescription || prompt.quickAnswer || prompt.blurb,
     alternates: { canonical: canonicalUrl },
   }
 }
@@ -83,6 +84,23 @@ export default async function PromptPage({
           </span>
         )}
       </div>
+
+      {prompt.verification?.lastVerified && (
+        <p className="mono" style={{ color: 'var(--fade)', fontSize: 11, marginTop: -8, marginBottom: 16 }}>
+          {(() => {
+            const verifier = prompt.verification.verifiedBy
+            const verifierName = typeof verifier === 'object' && verifier !== null ? verifier.name : undefined
+            const formattedDate = new Date(prompt.verification.lastVerified).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })
+            return verifierName
+              ? `Reviewed by ${verifierName} · Last updated ${formattedDate}`
+              : `Last updated ${formattedDate}`
+          })()}
+        </p>
+      )}
 
       {prompt.quickAnswer && <QuickAnswer text={prompt.quickAnswer} />}
 
@@ -201,24 +219,10 @@ export default async function PromptPage({
       {prompt.article?.heading && (
         <div style={{ marginTop: 40, maxWidth: 620 }}>
           <h2 className="display" style={{ fontSize: 22 }}>{prompt.article.heading}</h2>
-          {(prompt.article.paragraphs ?? []).map((p, i) => (
-            <p key={i} style={{ color: '#B8BEDA', fontSize: 14.5, lineHeight: 1.7, marginBottom: 14 }}>
-              {p.text}
-            </p>
-          ))}
-          {(prompt.article.tips ?? []).length > 0 && (
-            <>
-              <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', margin: '20px 0 10px' }}>
-                TIPS FOR BETTER RESULTS
-              </div>
-              <ul>
-                {(prompt.article.tips ?? []).map((t, i) => (
-                  <li key={i} style={{ color: '#B8BEDA', fontSize: 13.5, lineHeight: 1.6, marginBottom: 8 }}>
-                    {t.text}
-                  </li>
-                ))}
-              </ul>
-            </>
+          {prompt.article.body && (
+            <div style={{ color: '#B8BEDA', fontSize: 14.5, lineHeight: 1.7 }}>
+              <RichText data={prompt.article.body} />
+            </div>
           )}
         </div>
       )}

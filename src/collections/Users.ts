@@ -6,5 +6,14 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
   },
   auth: true,
-  fields: [],
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      admin: {
+        description:
+          'Public-facing display name shown on the frontend when this user verifies content. Leave blank to hide the byline name (only the date will show).',
+      },
+    },
+  ],
 }
