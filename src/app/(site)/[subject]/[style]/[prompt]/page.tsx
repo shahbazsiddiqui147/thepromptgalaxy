@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getPromptBySlug, getAdSettings } from '@/lib/queries'
+import { getPromptBySlug, getAdSettings, getSavedCount } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
@@ -76,6 +76,7 @@ export default async function PromptPage({
   // this page's ISR (`revalidate = 3600` above stays in effect).
   const adSettings = await getAdSettings()
   const adsEnabled = Boolean(adSettings.enabled)
+  const savedCount = await getSavedCount(prompt.id)
 
   const subject = prompt.subject as Subject
   const artStyle = prompt.artStyle as ArtStyle
@@ -122,8 +123,13 @@ export default async function PromptPage({
         )}
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <SaveButton promptId={prompt.id} />
+        {savedCount > 0 && (
+          <span className="mono" style={{ color: 'var(--fade)', fontSize: 11 }}>
+            {savedCount} {savedCount === 1 ? 'person' : 'people'} saved this
+          </span>
+        )}
       </div>
 
       {prompt.verification?.lastVerified && (

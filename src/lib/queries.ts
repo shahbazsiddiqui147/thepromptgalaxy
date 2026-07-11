@@ -194,3 +194,13 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
   })
   return result.docs
 }
+
+// Public, non-personal aggregate -- safe to compute in a static/ISR page body.
+export async function getSavedCount(promptId: number): Promise<number> {
+  const payload = await getPayloadClient()
+  const result = await payload.count({
+    collection: 'customers',
+    where: { savedPrompts: { equals: promptId } },
+  })
+  return result.totalDocs
+}
