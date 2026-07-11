@@ -145,6 +145,85 @@ export default async function PromptPage({
 
       {prompt.quickAnswer && <QuickAnswer text={prompt.quickAnswer} />}
 
+      {prompt.referenceRequired && (() => {
+        // Purely illustrative -- the site never handles a visitor's uploaded
+        // photo. This just shows what a reference-image prompt does: your own
+        // photo goes in, a restyled result comes out. Reuse whatever example
+        // image is already on the prompt (chain-step or single-frame) as the
+        // "result" side; if none exists yet, the box just stays a placeholder.
+        const outputImage = prompt.contentTypeUsesSteps
+          ? (() => {
+              const first = prompt.steps?.[0]?.exampleResult
+              return typeof first === 'object' ? (first as Media | null) : null
+            })()
+          : (() => {
+              const first = prompt.exampleResults?.[0]?.image
+              return typeof first === 'object' ? (first as Media | null) : null
+            })()
+        const outputUrl = outputImage?.sizes?.card?.url || outputImage?.url
+
+        return (
+          <div style={{ marginTop: 20, marginBottom: 24 }}>
+            <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
+              REFERENCE → RESULT
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 4,
+                  border: '1px dashed var(--border)',
+                  background: 'var(--ink-panel)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  color: 'var(--fade)',
+                  flexShrink: 0,
+                }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
+                </svg>
+                <span className="mono" style={{ fontSize: 9.5, textAlign: 'center', padding: '0 8px' }}>
+                  your reference photo
+                </span>
+              </div>
+              <span style={{ color: 'var(--fade)', fontSize: 20 }} aria-hidden="true">→</span>
+              <div
+                style={{
+                  width: 160,
+                  height: 120,
+                  borderRadius: 4,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  background: 'var(--ink-panel)',
+                  border: '1px solid var(--border)',
+                  flexShrink: 0,
+                }}
+              >
+                {outputUrl ? (
+                  <Image
+                    src={outputUrl}
+                    alt={outputImage?.alt || prompt.title}
+                    fill
+                    sizes="160px"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                    <span className="mono" style={{ fontSize: 9.5, color: 'var(--fade)' }}>example output</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {prompt.contentTypeUsesSteps ? (
         <div>
           <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 6 }}>
