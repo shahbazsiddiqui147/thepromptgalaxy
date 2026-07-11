@@ -202,7 +202,7 @@ export default async function HomePage() {
       {trending.length > 0 && (
         <section style={{ marginBottom: 48 }}>
           <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 12 }}>
-            TRENDING THIS WEEK
+            MOST SAVED
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
             {trending.map(({ prompt, saveCount }) => (
