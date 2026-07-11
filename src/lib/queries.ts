@@ -8,6 +8,11 @@ export const MIN_PROMPTS_FOR_COMBO_PAGE = 3
 // `access.read` control entirely -- every query below must filter status itself.
 const PUBLISHED = { _status: { equals: 'published' } } as const
 
+export const getAdSettings = cache(async () => {
+  const payload = await getPayloadClient()
+  return payload.findGlobal({ slug: 'ad-settings' })
+})
+
 export async function getSubjects(): Promise<Subject[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({ collection: 'subjects', limit: 100, sort: 'sortOrder' })

@@ -2,16 +2,44 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getPromptBySlug } from '@/lib/queries'
+import { getPromptBySlug, getAdSettings } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { SaveButton } from '@/components/SaveButton'
+import { AdSlot } from '@/components/AdSlot'
 import type { Subject, ArtStyle, Tool, Media } from '@/payload-types'
 
 export const revalidate = 3600
 export const dynamicParams = true
+
+// Small labeled wrapper matching this page's existing section-label
+// convention (e.g. "TESTED ON" / "PROMPT"). Renders nothing when the slot
+// has no embed code, so a disabled/empty slot never shows an empty box.
+function AdSlotSection({ label, code }: { label: string; code?: string | null }) {
+  if (!code || !code.trim()) return null
+  return (
+    <div style={{ marginTop: 24, marginBottom: 24 }}>
+      <div
+        className="mono"
+        style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          border: '1px solid var(--border)',
+          borderRadius: 4,
+          padding: '10px 14px',
+          background: 'var(--ink-panel)',
+        }}
+      >
+        <AdSlot html={code} />
+      </div>
+    </div>
+  )
+}
 
 export async function generateMetadata({
   params,
@@ -44,6 +72,11 @@ export default async function PromptPage({
   const prompt = await getPromptBySlug(promptSlug)
   if (!prompt) notFound()
 
+  // Plain Local API read, no cookies()/headers() involved -- doesn't affect
+  // this page's ISR (`revalidate = 3600` above stays in effect).
+  const adSettings = await getAdSettings()
+  const adsEnabled = Boolean(adSettings.enabled)
+
   const subject = prompt.subject as Subject
   const artStyle = prompt.artStyle as ArtStyle
   const toolEntries = prompt.tools as { tool: Tool | number; fit: 'great' | 'good'; id?: string | null }[]
@@ -62,6 +95,9 @@ export default async function PromptPage({
           { label: prompt.title, href: `/${subject.slug}/${artStyle.slug}/${prompt.slug}/` },
         ]}
       />
+
+      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.leaderboardCode} />}
+
       <h1 className="display" style={{ fontSize: 'clamp(28px, 5vw, 46px)', margin: '12px 0' }}>
         {prompt.title}
       </h1>
@@ -208,6 +244,8 @@ export default async function PromptPage({
         </div>
       )}
 
+      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.inContentCode} />}
+
       <div style={{ marginTop: 32 }}>
         <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
           TESTED ON
@@ -237,6 +275,8 @@ export default async function PromptPage({
           })}
         </div>
       </div>
+
+      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.sidebarCode} />}
 
       {prompt.article?.heading && (
         <div style={{ marginTop: 40, maxWidth: 620 }}>

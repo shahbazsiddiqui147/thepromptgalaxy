@@ -13,6 +13,7 @@ import { Tools } from './collections/Tools'
 import { ContentTypes } from './collections/ContentTypes'
 import { Prompts } from './collections/Prompts'
 import { Customers } from './collections/Customers'
+import { AdSettings } from './globals/AdSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -45,6 +46,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts, Customers],
+  globals: [AdSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,
   typescript: {
