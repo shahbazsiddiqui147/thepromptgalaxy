@@ -89,7 +89,7 @@ export async function getPromptsByTool(toolId: number): Promise<Prompt[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ tools: { equals: toolId } }, PUBLISHED] },
+    where: { and: [{ 'tools.tool': { equals: toolId } }, PUBLISHED] },
     depth: 2,
     sort: '-createdAt',
     limit: 100,

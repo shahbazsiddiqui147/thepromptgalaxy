@@ -49,11 +49,29 @@ export const Prompts: CollectionConfig = {
             },
             {
               name: 'tools',
-              type: 'relationship',
-              relationTo: 'tools',
+              type: 'array',
               required: true,
-              hasMany: true,
-              admin: { description: 'Which tools this prompt is tested/compatible with.' },
+              minRows: 1,
+              admin: { description: 'Which tools this prompt is tested/compatible with, and how well each one fits.' },
+              fields: [
+                {
+                  name: 'tool',
+                  type: 'relationship',
+                  relationTo: 'tools',
+                  required: true,
+                  hasMany: false,
+                },
+                {
+                  name: 'fit',
+                  type: 'select',
+                  required: true,
+                  defaultValue: 'good',
+                  options: [
+                    { label: 'Great Fit', value: 'great' },
+                    { label: 'Good Fit', value: 'good' },
+                  ],
+                },
+              ],
             },
             {
               name: 'contentType',
@@ -315,10 +333,13 @@ export const Prompts: CollectionConfig = {
           revalidatePath(`/style/${artStyle.slug}/`)
           revalidatePath('/chains/')
 
-          const tools = Array.isArray(doc.tools) ? doc.tools : []
-          for (const t of tools) {
+          const toolEntries = Array.isArray(doc.tools) ? doc.tools : []
+          for (const entry of toolEntries) {
+            const toolRef = entry?.tool
             const tool =
-              typeof t === 'object' ? t : await req.payload.findByID({ collection: 'tools', id: t })
+              typeof toolRef === 'object'
+                ? toolRef
+                : await req.payload.findByID({ collection: 'tools', id: toolRef })
             if (tool?.slug) revalidatePath(`/tool/${tool.slug}/`)
           }
         } catch (err) {

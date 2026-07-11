@@ -46,7 +46,7 @@ export default async function PromptPage({
 
   const subject = prompt.subject as Subject
   const artStyle = prompt.artStyle as ArtStyle
-  const tools = prompt.tools as Tool[]
+  const toolEntries = prompt.tools as { tool: Tool | number; fit: 'great' | 'good'; id?: string | null }[]
 
   // The URL's subject/style segments must match the prompt's actual taxonomy —
   // otherwise this is a stale/incorrect link, not a valid alternate path.
@@ -213,11 +213,28 @@ export default async function PromptPage({
           TESTED ON
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {tools.map((t) => (
-            <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}>
-              <span style={{ fontWeight: 600, fontSize: 13.5 }}>{t.name}</span>
-            </div>
-          ))}
+          {toolEntries.map((entry, i) => {
+            const tool = typeof entry.tool === 'object' ? entry.tool : undefined
+            if (!tool) return null
+            return (
+              <div
+                key={entry.id ?? tool.id ?? i}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}
+              >
+                <span style={{ fontWeight: 600, fontSize: 13.5 }}>{tool.name}</span>
+                <span
+                  className="mono"
+                  style={
+                    entry.fit === 'great'
+                      ? { background: 'var(--amber)', color: 'var(--ink)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
+                      : { border: '1px solid var(--amber)', color: 'var(--amber)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
+                  }
+                >
+                  {entry.fit === 'great' ? 'Great Fit' : 'Good Fit'}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
