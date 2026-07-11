@@ -8,6 +8,11 @@ export const MIN_PROMPTS_FOR_COMBO_PAGE = 3
 // `access.read` control entirely -- every query below must filter status itself.
 const PUBLISHED = { _status: { equals: 'published' } } as const
 
+export const getAdSettings = cache(async () => {
+  const payload = await getPayloadClient()
+  return payload.findGlobal({ slug: 'ad-settings' })
+})
+
 export async function getSubjects(): Promise<Subject[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({ collection: 'subjects', limit: 100, sort: 'sortOrder' })
@@ -89,7 +94,7 @@ export async function getPromptsByTool(toolId: number): Promise<Prompt[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'prompts',
-    where: { and: [{ tools: { equals: toolId } }, PUBLISHED] },
+    where: { and: [{ 'tools.tool': { equals: toolId } }, PUBLISHED] },
     depth: 2,
     sort: '-createdAt',
     limit: 100,
@@ -188,4 +193,14 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
     limit: 100,
   })
   return result.docs
+}
+
+// Public, non-personal aggregate -- safe to compute in a static/ISR page body.
+export async function getSavedCount(promptId: number): Promise<number> {
+  const payload = await getPayloadClient()
+  const result = await payload.count({
+    collection: 'customers',
+    where: { savedPrompts: { equals: promptId } },
+  })
+  return result.totalDocs
 }

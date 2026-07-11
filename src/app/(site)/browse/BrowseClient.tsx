@@ -19,10 +19,14 @@ export function BrowseClient({
   const filtered = useMemo(() => {
     return prompts.filter((p) => {
       const subject = p.subject as Subject
-      const promptTools = p.tools as Tool[]
+      const promptTools = p.tools as { tool: Tool | number; fit: string }[]
       const subjectMatch = activeSubject === 'All' || (subject.slug ?? '') === activeSubject
       const toolMatch =
-        activeTools.size === 0 || promptTools.some((t) => activeTools.has(t.slug ?? ''))
+        activeTools.size === 0 ||
+        promptTools.some((t) => {
+          const slug = typeof t.tool === 'object' ? t.tool?.slug : undefined
+          return activeTools.has(slug ?? '')
+        })
       return subjectMatch && toolMatch
     })
   }, [prompts, activeSubject, activeTools])

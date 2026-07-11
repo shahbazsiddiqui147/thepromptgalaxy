@@ -2,16 +2,46 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import { getPromptBySlug } from '@/lib/queries'
+import { getPromptBySlug, getAdSettings, getSavedCount } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { SaveButton } from '@/components/SaveButton'
-import type { Subject, ArtStyle, Tool, Media } from '@/payload-types'
+import { AdSlot } from '@/components/AdSlot'
+import { ExampleResultGallery } from '@/components/ExampleResultGallery'
+import { PromptCard } from '@/components/PromptCard'
+import type { Subject, ArtStyle, Tool, Media, Prompt } from '@/payload-types'
 
 export const revalidate = 3600
 export const dynamicParams = true
+
+// Small labeled wrapper matching this page's existing section-label
+// convention (e.g. "TESTED ON" / "PROMPT"). Renders nothing when the slot
+// has no embed code, so a disabled/empty slot never shows an empty box.
+function AdSlotSection({ label, code }: { label: string; code?: string | null }) {
+  if (!code || !code.trim()) return null
+  return (
+    <div style={{ marginTop: 24, marginBottom: 24 }}>
+      <div
+        className="mono"
+        style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          border: '1px solid var(--border)',
+          borderRadius: 4,
+          padding: '10px 14px',
+          background: 'var(--ink-panel)',
+        }}
+      >
+        <AdSlot html={code} />
+      </div>
+    </div>
+  )
+}
 
 export async function generateMetadata({
   params,
@@ -44,9 +74,15 @@ export default async function PromptPage({
   const prompt = await getPromptBySlug(promptSlug)
   if (!prompt) notFound()
 
+  // Plain Local API read, no cookies()/headers() involved -- doesn't affect
+  // this page's ISR (`revalidate = 3600` above stays in effect).
+  const adSettings = await getAdSettings()
+  const adsEnabled = Boolean(adSettings.enabled)
+  const savedCount = await getSavedCount(prompt.id)
+
   const subject = prompt.subject as Subject
   const artStyle = prompt.artStyle as ArtStyle
-  const tools = prompt.tools as Tool[]
+  const toolEntries = prompt.tools as { tool: Tool | number; fit: 'great' | 'good'; id?: string | null }[]
 
   // The URL's subject/style segments must match the prompt's actual taxonomy —
   // otherwise this is a stale/incorrect link, not a valid alternate path.
@@ -62,6 +98,9 @@ export default async function PromptPage({
           { label: prompt.title, href: `/${subject.slug}/${artStyle.slug}/${prompt.slug}/` },
         ]}
       />
+
+      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.leaderboardCode} />}
+
       <h1 className="display" style={{ fontSize: 'clamp(28px, 5vw, 46px)', margin: '12px 0' }}>
         {prompt.title}
       </h1>
@@ -86,10 +125,6 @@ export default async function PromptPage({
         )}
       </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <SaveButton promptId={prompt.id} />
-      </div>
-
       {prompt.verification?.lastVerified && (
         <p className="mono" style={{ color: 'var(--fade)', fontSize: 11, marginTop: -8, marginBottom: 16 }}>
           {(() => {
@@ -109,115 +144,151 @@ export default async function PromptPage({
 
       {prompt.quickAnswer && <QuickAnswer text={prompt.quickAnswer} />}
 
-      {prompt.contentTypeUsesSteps ? (
+      {(() => {
+        const galleryResults = prompt.contentTypeUsesSteps
+          ? (() => {
+              const first = prompt.steps?.[0]?.exampleResult
+              const image = typeof first === 'object' ? (first as Media | null) : null
+              const imageUrl = image?.sizes?.card?.url || image?.url
+              return imageUrl ? [{ imageUrl, alt: image?.alt || prompt.title, note: null }] : []
+            })()
+          : (prompt.exampleResults ?? []).flatMap((result) => {
+              const image = typeof result.image === 'object' ? (result.image as Media | null) : null
+              const imageUrl = image?.sizes?.card?.url || image?.url
+              return imageUrl ? [{ imageUrl, alt: image?.alt || prompt.title, note: result.note }] : []
+            })
+        return (
+          <ExampleResultGallery
+            referenceRequired={Boolean(prompt.referenceRequired)}
+            results={galleryResults}
+            promptTitle={prompt.title}
+          />
+        )
+      })()}
+
+      <div className="prompt-layout" style={{ marginTop: 24 }}>
         <div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 6 }}>
-            CHAIN STEPS
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {(prompt.steps ?? []).map((step, i) => (
-              <div key={`${step.label}-${i}`}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <span
-                    className="mono"
-                    style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--rust)', color: 'var(--paper)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}
-                  >
-                    {i + 1}
-                  </span>
-                  <span className="mono" style={{ fontSize: 11 }}>{step.label.toUpperCase()}</span>
-                  <span style={{ color: 'var(--fade)', fontSize: 12.5 }}>{step.note}</span>
-                </div>
-                <CopyBox text={step.promptText} />
-                {(() => {
-                  const stepImage = typeof step.exampleResult === 'object' ? (step.exampleResult as Media | null) : null
-                  const stepImageUrl = stepImage?.sizes?.card?.url || stepImage?.url
-                  if (!stepImageUrl) return null
-                  return (
-                    <div
-                      style={{
-                        position: 'relative',
-                        width: 160,
-                        height: 160,
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                        marginTop: 10,
-                        background: 'var(--ink-panel)',
-                      }}
-                    >
-                      <Image
-                        src={stepImageUrl}
-                        alt={stepImage?.alt || step.label}
-                        fill
-                        sizes="160px"
-                        style={{ objectFit: 'cover' }}
-                      />
-                    </div>
-                  )
-                })()}
+          {prompt.contentTypeUsesSteps ? (
+            <div>
+              <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 6 }}>
+                CHAIN STEPS
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div>
-          <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
-            PROMPT
-          </div>
-          {prompt.promptText && <CopyBox text={prompt.promptText} />}
-          {(prompt.exampleResults ?? []).length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
-                EXAMPLE RESULTS
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
-                {(prompt.exampleResults ?? []).map((result, i) => {
-                  const image = typeof result.image === 'object' ? (result.image as Media | null) : null
-                  const imageUrl = image?.sizes?.card?.url || image?.url
-                  if (!imageUrl) return null
-                  return (
-                    <figure key={i} style={{ margin: 0 }}>
-                      <div
-                        style={{
-                          position: 'relative',
-                          width: '100%',
-                          aspectRatio: '1 / 1',
-                          borderRadius: 4,
-                          overflow: 'hidden',
-                          background: 'var(--ink-panel)',
-                        }}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {(prompt.steps ?? []).map((step, i) => (
+                  <div key={`${step.label}-${i}`}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                      <span
+                        className="mono"
+                        style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--rust)', color: 'var(--paper)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}
                       >
-                        <Image
-                          src={imageUrl}
-                          alt={image?.alt || prompt.title}
-                          fill
-                          sizes="200px"
-                          style={{ objectFit: 'cover' }}
-                        />
-                      </div>
-                      {result.note && (
-                        <figcaption style={{ fontSize: 11.5, color: 'var(--fade)', marginTop: 6 }}>
-                          {result.note}
-                        </figcaption>
-                      )}
-                    </figure>
-                  )
-                })}
+                        {i + 1}
+                      </span>
+                      <span className="mono" style={{ fontSize: 11 }}>{step.label.toUpperCase()}</span>
+                      <span style={{ color: 'var(--fade)', fontSize: 12.5 }}>{step.note}</span>
+                    </div>
+                    <CopyBox text={step.promptText} />
+                    {(() => {
+                      const stepImage = typeof step.exampleResult === 'object' ? (step.exampleResult as Media | null) : null
+                      const stepImageUrl = stepImage?.sizes?.card?.url || stepImage?.url
+                      if (!stepImageUrl) return null
+                      return (
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: 160,
+                            height: 160,
+                            borderRadius: 4,
+                            overflow: 'hidden',
+                            marginTop: 10,
+                            background: 'var(--ink-panel)',
+                          }}
+                        >
+                          <Image
+                            src={stepImageUrl}
+                            alt={stepImage?.alt || step.label}
+                            fill
+                            sizes="160px"
+                            style={{ objectFit: 'cover' }}
+                          />
+                        </div>
+                      )
+                    })()}
+                  </div>
+                ))}
               </div>
             </div>
+          ) : (
+            <div>
+              <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
+                PROMPT
+              </div>
+              {prompt.promptText && <CopyBox text={prompt.promptText} />}
+            </div>
           )}
+
+          {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.inContentCode} />}
         </div>
-      )}
+
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
+            <SaveButton promptId={prompt.id} />
+          </div>
+          {savedCount > 0 && (
+            <p className="mono" style={{ color: 'var(--fade)', fontSize: 11, marginTop: -10, marginBottom: 16 }}>
+              {savedCount} {savedCount === 1 ? 'person' : 'people'} saved this
+            </p>
+          )}
+
+          {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.sidebarCode} />}
+
+          {(() => {
+            const similar = (prompt.similarPrompts ?? []).filter(
+              (p): p is Prompt => typeof p === 'object' && p !== null && p._status === 'published',
+            )
+            if (similar.length === 0) return null
+            return (
+              <div style={{ marginTop: 24 }}>
+                <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
+                  SIMILAR PROMPTS
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {similar.map((p) => (
+                    <PromptCard key={p.id} prompt={p} />
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+        </div>
+      </div>
 
       <div style={{ marginTop: 32 }}>
         <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
           TESTED ON
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {tools.map((t) => (
-            <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}>
-              <span style={{ fontWeight: 600, fontSize: 13.5 }}>{t.name}</span>
-            </div>
-          ))}
+          {toolEntries.map((entry, i) => {
+            const tool = typeof entry.tool === 'object' ? entry.tool : undefined
+            if (!tool) return null
+            return (
+              <div
+                key={entry.id ?? tool.id ?? i}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}
+              >
+                <span style={{ fontWeight: 600, fontSize: 13.5 }}>{tool.name}</span>
+                <span
+                  className="mono"
+                  style={
+                    entry.fit === 'great'
+                      ? { background: 'var(--amber)', color: 'var(--ink)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
+                      : { border: '1px solid var(--amber)', color: 'var(--amber)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
+                  }
+                >
+                  {entry.fit === 'great' ? 'Great Fit' : 'Good Fit'}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
