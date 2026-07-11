@@ -19,6 +19,23 @@ export async function getSubjects(): Promise<Subject[]> {
   return result.docs
 }
 
+// This site has a small (single-digit) number of subjects, so running one
+// `count` query per subject in parallel is fine -- no need for a fancier
+// aggregate query.
+export async function getSubjectsWithCounts(): Promise<(Subject & { promptCount: number })[]> {
+  const payload = await getPayloadClient()
+  const subjects = await getSubjects()
+  const counts = await Promise.all(
+    subjects.map((subject) =>
+      payload.count({
+        collection: 'prompts',
+        where: { and: [{ subject: { equals: subject.id } }, PUBLISHED] },
+      }),
+    ),
+  )
+  return subjects.map((subject, i) => ({ ...subject, promptCount: counts[i].totalDocs }))
+}
+
 export async function getArtStyles(): Promise<ArtStyle[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({ collection: 'art-styles', limit: 100, sort: 'sortOrder' })
@@ -203,4 +220,29 @@ export async function getSavedCount(promptId: number): Promise<number> {
     where: { savedPrompts: { equals: promptId } },
   })
   return result.totalDocs
+}
+
+// All-time popularity ranking, NOT a genuine rolling "this week" window --
+// there's no per-save timestamp anywhere in the schema (Customers.savedPrompts
+// only records current membership, not when each save happened). Building a
+// real weekly-trending window would need a new schema (e.g. a join collection
+// with timestamps), which is out of scope here. Label this honestly wherever
+// it's rendered -- don't claim real-time/weekly windowing.
+export async function getTrendingPrompts(limit = 10): Promise<{ prompt: Prompt; saveCount: number }[]> {
+  const payload = await getPayloadClient()
+  const [promptsResult, customersResult] = await Promise.all([
+    payload.find({ collection: 'prompts', where: PUBLISHED, depth: 2, limit: 200 }),
+    payload.find({ collection: 'customers', limit: 1000, depth: 0 }),
+  ])
+  const counts = new Map<number, number>()
+  for (const customer of customersResult.docs) {
+    for (const saved of customer.savedPrompts ?? []) {
+      const id = typeof saved === 'object' && saved !== null ? saved.id : saved
+      if (typeof id === 'number') counts.set(id, (counts.get(id) ?? 0) + 1)
+    }
+  }
+  return promptsResult.docs
+    .map((prompt) => ({ prompt, saveCount: counts.get(prompt.id) ?? 0 }))
+    .sort((a, b) => b.saveCount - a.saveCount)
+    .slice(0, limit)
 }
