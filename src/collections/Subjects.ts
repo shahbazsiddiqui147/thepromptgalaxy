@@ -7,7 +7,7 @@ export const Subjects: CollectionConfig = {
   slug: 'subjects',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'slug', 'sortOrder'],
+    defaultColumns: ['name', 'slug', 'colorHex', 'sortOrder'],
     group: 'Taxonomy',
   },
   access: {
@@ -33,6 +33,11 @@ export const Subjects: CollectionConfig = {
       name: 'description',
       type: 'textarea',
       admin: { description: 'Shown on the subject landing page for SEO/AEO.' },
+    },
+    {
+      name: 'colorHex',
+      type: 'text',
+      admin: { description: 'Hex color used for this subject’s tag/dot in the UI, e.g. #C9A227' },
     },
     {
       name: 'icon',
