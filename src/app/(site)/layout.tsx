@@ -14,6 +14,9 @@ export const metadata: Metadata = {
 }
 
 const navLinks = [
+  // No dedicated "all subjects" page exists yet -- subjects are browsable via
+  // the homepage's "Browse by Subject" section, so this jumps straight there.
+  { href: '/#subjects', label: 'Subject' },
   { href: '/style/', label: 'Styles' },
   { href: '/tool/', label: 'Tools' },
   { href: '/chains/', label: 'Chains' },
@@ -58,9 +61,17 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <Link
               href={customer ? '/account' : '/login'}
               className="mono"
-              style={{ color: 'var(--paper)', textDecoration: 'none', fontSize: 13 }}
+              style={{
+                background: 'var(--amber)',
+                color: 'var(--ink)',
+                textDecoration: 'none',
+                fontSize: 13,
+                fontWeight: 700,
+                padding: '8px 16px',
+                borderRadius: 2,
+              }}
             >
-              {customer ? 'Account' : 'Log in'}
+              {customer ? 'Account' : 'Sign In'}
             </Link>
           </div>
         </header>

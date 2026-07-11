@@ -94,3 +94,23 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Blows up the compact header SearchForm into a homepage-hero-scale search
+   bar without rebuilding the component -- targets its nested <form>/<input>. */
+.search-hero form {
+  width: 100%;
+}
+
+.search-hero input {
+  width: 100%;
+  font-size: 16px;
+  padding: 14px 18px;
+}
+
+.newly-published-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
