@@ -82,3 +82,15 @@ button {
   margin: 0 auto;
   padding: 0 24px;
 }
+
+.prompt-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 32px;
+}
+
+@media (max-width: 800px) {
+  .prompt-layout {
+    grid-template-columns: 1fr;
+  }
+}
