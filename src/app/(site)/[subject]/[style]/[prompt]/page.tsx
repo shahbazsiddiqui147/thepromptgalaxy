@@ -243,7 +243,7 @@ export default async function PromptPage({
 
           {(() => {
             const similar = (prompt.similarPrompts ?? []).filter(
-              (p): p is Prompt => typeof p === 'object' && p !== null,
+              (p): p is Prompt => typeof p === 'object' && p !== null && p._status === 'published',
             )
             if (similar.length === 0) return null
             return (
