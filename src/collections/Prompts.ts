@@ -33,12 +33,17 @@ export const Prompts: CollectionConfig = {
                 components: { Label: '/components/admin/CardLabel#CardLabel' },
               },
               fields: [
-                { name: 'title', type: 'text', required: true },
+                {
+                  name: 'title',
+                  type: 'text',
+                  required: true,
+                  admin: { components: { Cell: '/components/admin/RowActions#RowActions' } },
+                },
                 {
                   name: 'slug',
                   type: 'text',
                   unique: true,
-                  admin: { description: 'Auto-generated from Title if left blank.' },
+                  admin: { readOnly: true, description: 'Auto-generated from Title.' },
                 },
                 { name: 'blurb', type: 'textarea', required: true },
               ],

@@ -30,12 +30,13 @@ export const Subjects: CollectionConfig = {
           type: 'text',
           required: true,
           unique: true,
+          admin: { components: { Cell: '/components/admin/RowActions#RowActions' } },
         },
         {
           name: 'slug',
           type: 'text',
           unique: true,
-          admin: { description: 'Auto-generated from Name if left blank. URL-safe identifier, e.g. "real-estate"' },
+          admin: { readOnly: true, description: 'Auto-generated from Name. URL-safe identifier, e.g. "real-estate"' },
         },
         {
           name: 'description',

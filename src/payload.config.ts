@@ -1,5 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { FixedToolbarFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -47,7 +47,13 @@ export default buildConfig({
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts, Customers],
   globals: [AdSettings],
-  editor: lexicalEditor(),
+  // Default features already cover headings/lists/links/bold/italic etc; the
+  // only thing missing was a persistent toolbar -- lexicalEditor()'s default
+  // feature set relies on a floating selection toolbar only, which reads as
+  // "no WYSIWYG editor at all" until you highlight text.
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [...defaultFeatures, FixedToolbarFeature()],
+  }),
   secret: payloadSecret,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

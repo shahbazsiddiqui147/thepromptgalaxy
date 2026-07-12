@@ -1,3 +1,4 @@
+import { RowActions as RowActions_4ac536b05bcf7dd66a6c577ab1ace490 } from '../../../components/admin/RowActions'
 import { CardLabel as CardLabel_a6d253dd53b6ae4d1e497052eb1a1506 } from '../../../components/admin/CardLabel'
 import { ColorPillPicker as ColorPillPicker_9a8a2683ed77014aa709ea6d4b834ad9 } from '../../../components/admin/ColorPillPicker'
 import { ToolsPicker as ToolsPicker_f2256ae26cc819c837b5ffc369299444 } from '../../../components/admin/ToolsPicker'
@@ -5,6 +6,7 @@ import { StepRowLabel as StepRowLabel_d80f7a11e660137d5eae10e03c064f66 } from '.
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
+import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -33,6 +35,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/RowActions#RowActions": RowActions_4ac536b05bcf7dd66a6c577ab1ace490,
   "/components/admin/CardLabel#CardLabel": CardLabel_a6d253dd53b6ae4d1e497052eb1a1506,
   "/components/admin/ColorPillPicker#ColorPillPicker": ColorPillPicker_9a8a2683ed77014aa709ea6d4b834ad9,
   "/components/admin/ToolsPicker#ToolsPicker": ToolsPicker_f2256ae26cc819c837b5ffc369299444,
@@ -40,6 +43,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
+  "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
