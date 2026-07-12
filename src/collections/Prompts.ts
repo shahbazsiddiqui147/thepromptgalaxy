@@ -344,6 +344,16 @@ export const Prompts: CollectionConfig = {
       ],
     },
     {
+      name: 'livePreview',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '/components/admin/LivePreview#LivePreview',
+        },
+      },
+    },
+    {
       name: 'seo',
       type: 'group',
       admin: {
