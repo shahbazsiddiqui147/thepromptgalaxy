@@ -39,6 +39,11 @@ export const Prompts: CollectionConfig = {
               relationTo: 'subjects',
               required: true,
               hasMany: false,
+              admin: {
+                components: {
+                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                },
+              },
             },
             {
               name: 'artStyle',
@@ -46,13 +51,23 @@ export const Prompts: CollectionConfig = {
               relationTo: 'art-styles',
               required: true,
               hasMany: false,
+              admin: {
+                components: {
+                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                },
+              },
             },
             {
               name: 'tools',
               type: 'array',
               required: true,
               minRows: 1,
-              admin: { description: 'Which tools this prompt is tested/compatible with, and how well each one fits.' },
+              admin: {
+                description: 'Which tools this prompt is tested/compatible with, and how well each one fits.',
+                components: {
+                  Field: '/components/admin/ToolsPicker#ToolsPicker',
+                },
+              },
               fields: [
                 {
                   name: 'tool',
@@ -79,6 +94,11 @@ export const Prompts: CollectionConfig = {
               relationTo: 'content-types',
               required: true,
               hasMany: false,
+              admin: {
+                components: {
+                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                },
+              },
             },
             {
               name: 'contentTypeUsesSteps',
