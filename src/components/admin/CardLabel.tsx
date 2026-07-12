@@ -11,14 +11,16 @@ import {
   Palette,
   Wrench,
 } from 'lucide-react'
-import type { GenericLabelProps } from 'payload'
+import type { CollapsibleFieldClient } from 'payload'
 
 // Custom `admin.components.Label` for the collapsible "card" fields used
-// throughout the admin redesign. Payload passes the collapsible's own
-// `label` string through as a prop -- we key off that text to pick a matching
-// icon rather than registering a separate component per card, so every card
-// header stays defined in one place, driven entirely by the collection
-// config's `label` value.
+// throughout the admin redesign. Verified directly against a live document
+// (React fiber inspection): Payload does NOT pass the collapsible's label as
+// a top-level `label` prop here -- it passes the field's own client config
+// as `props.field`, with the label at `field.label`. We key off that text to
+// pick a matching icon rather than registering a separate component per
+// card, so every card header stays defined in one place, driven entirely by
+// the collection config's `label` value.
 const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string }>> = {
   Content: FileText,
   Taxonomy: Tag,
@@ -38,8 +40,8 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
 
 const GOLD = '#C9A227'
 
-export function CardLabel({ label }: GenericLabelProps) {
-  const text = typeof label === 'string' ? label : ''
+export function CardLabel({ field }: { field?: CollapsibleFieldClient }) {
+  const text = typeof field?.label === 'string' ? field.label : ''
   const Icon = ICONS[text]
 
   return (
