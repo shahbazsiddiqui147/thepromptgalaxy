@@ -1,3 +1,4 @@
+import { CardLabel as CardLabel_a6d253dd53b6ae4d1e497052eb1a1506 } from '../../../components/admin/CardLabel'
 import { ColorPillPicker as ColorPillPicker_9a8a2683ed77014aa709ea6d4b834ad9 } from '../../../components/admin/ColorPillPicker'
 import { ToolsPicker as ToolsPicker_f2256ae26cc819c837b5ffc369299444 } from '../../../components/admin/ToolsPicker'
 import { StepRowLabel as StepRowLabel_d80f7a11e660137d5eae10e03c064f66 } from '../../../components/admin/StepRowLabel'
@@ -31,6 +32,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "/components/admin/CardLabel#CardLabel": CardLabel_a6d253dd53b6ae4d1e497052eb1a1506,
   "/components/admin/ColorPillPicker#ColorPillPicker": ColorPillPicker_9a8a2683ed77014aa709ea6d4b834ad9,
   "/components/admin/ToolsPicker#ToolsPicker": ToolsPicker_f2256ae26cc819c837b5ffc369299444,
   "/components/admin/StepRowLabel#StepRowLabel": StepRowLabel_d80f7a11e660137d5eae10e03c064f66,

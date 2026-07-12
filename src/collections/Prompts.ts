@@ -25,100 +25,128 @@ export const Prompts: CollectionConfig = {
         {
           label: 'Basic Info',
           fields: [
-            { name: 'title', type: 'text', required: true },
             {
-              name: 'slug',
-              type: 'text',
-              unique: true,
-              admin: { description: 'Auto-generated from Title if left blank.' },
-            },
-
-            {
-              name: 'subject',
-              type: 'relationship',
-              relationTo: 'subjects',
-              required: true,
-              hasMany: false,
+              type: 'collapsible',
+              label: 'Content',
               admin: {
-                components: {
-                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
-                },
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
               },
+              fields: [
+                { name: 'title', type: 'text', required: true },
+                {
+                  name: 'slug',
+                  type: 'text',
+                  unique: true,
+                  admin: { description: 'Auto-generated from Title if left blank.' },
+                },
+                { name: 'blurb', type: 'textarea', required: true },
+              ],
             },
             {
-              name: 'artStyle',
-              type: 'relationship',
-              relationTo: 'art-styles',
-              required: true,
-              hasMany: false,
+              type: 'collapsible',
+              label: 'Taxonomy',
               admin: {
-                components: {
-                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
-                },
-              },
-            },
-            {
-              name: 'tools',
-              type: 'array',
-              required: true,
-              minRows: 1,
-              admin: {
-                description: 'Which tools this prompt is tested/compatible with, and how well each one fits.',
-                components: {
-                  Field: '/components/admin/ToolsPicker#ToolsPicker',
-                },
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
               },
               fields: [
                 {
-                  name: 'tool',
+                  name: 'subject',
                   type: 'relationship',
-                  relationTo: 'tools',
+                  relationTo: 'subjects',
                   required: true,
                   hasMany: false,
+                  admin: {
+                    components: {
+                      Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                    },
+                  },
                 },
                 {
-                  name: 'fit',
-                  type: 'select',
+                  name: 'artStyle',
+                  type: 'relationship',
+                  relationTo: 'art-styles',
                   required: true,
-                  defaultValue: 'good',
-                  options: [
-                    { label: 'Great Fit', value: 'great' },
-                    { label: 'Good Fit', value: 'good' },
+                  hasMany: false,
+                  admin: {
+                    components: {
+                      Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                    },
+                  },
+                },
+                {
+                  name: 'tools',
+                  type: 'array',
+                  required: true,
+                  minRows: 1,
+                  admin: {
+                    description: 'Which tools this prompt is tested/compatible with, and how well each one fits.',
+                    components: {
+                      Field: '/components/admin/ToolsPicker#ToolsPicker',
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'tool',
+                      type: 'relationship',
+                      relationTo: 'tools',
+                      required: true,
+                      hasMany: false,
+                    },
+                    {
+                      name: 'fit',
+                      type: 'select',
+                      required: true,
+                      defaultValue: 'good',
+                      options: [
+                        { label: 'Great Fit', value: 'great' },
+                        { label: 'Good Fit', value: 'good' },
+                      ],
+                    },
                   ],
+                },
+                {
+                  name: 'contentType',
+                  type: 'relationship',
+                  relationTo: 'content-types',
+                  required: true,
+                  hasMany: false,
+                  admin: {
+                    components: {
+                      Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                    },
+                  },
+                },
+                {
+                  name: 'contentTypeUsesSteps',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    hidden: true,
+                    description: 'Synced automatically from the selected Content Type — not editable directly.',
+                  },
                 },
               ],
             },
             {
-              name: 'contentType',
-              type: 'relationship',
-              relationTo: 'content-types',
-              required: true,
-              hasMany: false,
+              type: 'collapsible',
+              label: 'Cover Image',
               admin: {
-                components: {
-                  Field: '/components/admin/ColorPillPicker#ColorPillPicker',
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
+              fields: [
+                {
+                  name: 'coverImage',
+                  type: 'upload',
+                  relationTo: 'media',
+                  admin: {
+                    description:
+                      'Main thumbnail shown wherever this prompt is listed (homepage, archive grids, browse page). Falls back to a color gradient if left blank.',
+                  },
                 },
-              },
-            },
-            {
-              name: 'contentTypeUsesSteps',
-              type: 'checkbox',
-              defaultValue: false,
-              admin: {
-                hidden: true,
-                description: 'Synced automatically from the selected Content Type — not editable directly.',
-              },
-            },
-
-            { name: 'blurb', type: 'textarea', required: true },
-            {
-              name: 'coverImage',
-              type: 'upload',
-              relationTo: 'media',
-              admin: {
-                description:
-                  'Main thumbnail shown wherever this prompt is listed (homepage, archive grids, browse page). Falls back to a color gradient if left blank.',
-              },
+              ],
             },
           ],
         },
@@ -126,78 +154,105 @@ export const Prompts: CollectionConfig = {
           label: 'Prompt Content',
           fields: [
             {
-              name: 'referenceRequired',
-              type: 'checkbox',
-              defaultValue: false,
-              admin: { description: 'Does running this prompt require the user to upload a reference photo?' },
-            },
-            {
-              name: 'referenceNote',
-              type: 'text',
+              type: 'collapsible',
+              label: 'Reference Image',
               admin: {
-                description: 'e.g. "Face only", "Face + outfit", "Outfit only (no face)", "Couple (multi-face)"',
-                condition: (data) => Boolean(data.referenceRequired),
-              },
-            },
-
-            {
-              name: 'promptText',
-              type: 'textarea',
-              admin: {
-                description: 'The full copyable prompt text.',
-                condition: (data) => !data.contentTypeUsesSteps,
-              },
-            },
-
-            {
-              name: 'steps',
-              type: 'array',
-              admin: {
-                description: 'Ordered steps — each carries context forward from the last. Steps are collapsed by default, including one you just added — click a step to expand it.',
-                condition: (data) => Boolean(data.contentTypeUsesSteps),
-                initCollapsed: true,
-                components: {
-                  RowLabel: '/components/admin/StepRowLabel#StepRowLabel',
-                },
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
               },
               fields: [
                 {
-                  name: 'label',
+                  name: 'referenceRequired',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: { description: 'Does running this prompt require the user to upload a reference photo?' },
+                },
+                {
+                  name: 'referenceNote',
                   type: 'text',
-                  required: true,
-                  admin: { description: 'Short name for this step, e.g. "Base" or "Relocate" — shown next to the step number.' },
-                },
-                {
-                  name: 'note',
-                  type: 'text',
-                  required: true,
-                  admin: { description: 'One-line explanation of what this step does — shown next to the step number on the site.' },
-                },
-                {
-                  name: 'promptText',
-                  type: 'textarea',
-                  required: true,
-                  admin: { description: 'The actual prompt text for this step.' },
-                },
-                {
-                  name: 'exampleResult',
-                  type: 'upload',
-                  relationTo: 'media',
-                  admin: { description: "Optional example image showing this step's result." },
+                  admin: {
+                    description: 'e.g. "Face only", "Face + outfit", "Outfit only (no face)", "Couple (multi-face)"',
+                    condition: (data) => Boolean(data.referenceRequired),
+                  },
                 },
               ],
             },
-
             {
-              name: 'exampleResults',
-              type: 'array',
+              type: 'collapsible',
+              label: 'Prompt Text',
               admin: {
-                description: 'Result image variations shown in the gallery.',
-                condition: (data) => !data.contentTypeUsesSteps,
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
               },
               fields: [
-                { name: 'image', type: 'upload', relationTo: 'media', required: true },
-                { name: 'note', type: 'text' },
+                {
+                  name: 'promptText',
+                  type: 'textarea',
+                  admin: {
+                    description: 'The full copyable prompt text.',
+                    condition: (data) => !data.contentTypeUsesSteps,
+                  },
+                },
+                {
+                  name: 'steps',
+                  type: 'array',
+                  admin: {
+                    description: 'Ordered steps — each carries context forward from the last. Steps are collapsed by default, including one you just added — click a step to expand it.',
+                    condition: (data) => Boolean(data.contentTypeUsesSteps),
+                    initCollapsed: true,
+                    components: {
+                      RowLabel: '/components/admin/StepRowLabel#StepRowLabel',
+                    },
+                  },
+                  fields: [
+                    {
+                      name: 'label',
+                      type: 'text',
+                      required: true,
+                      admin: { description: 'Short name for this step, e.g. "Base" or "Relocate" — shown next to the step number.' },
+                    },
+                    {
+                      name: 'note',
+                      type: 'text',
+                      required: true,
+                      admin: { description: 'One-line explanation of what this step does — shown next to the step number on the site.' },
+                    },
+                    {
+                      name: 'promptText',
+                      type: 'textarea',
+                      required: true,
+                      admin: { description: 'The actual prompt text for this step.' },
+                    },
+                    {
+                      name: 'exampleResult',
+                      type: 'upload',
+                      relationTo: 'media',
+                      admin: { description: "Optional example image showing this step's result." },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Example Results',
+              admin: {
+                initCollapsed: false,
+                condition: (data) => !data.contentTypeUsesSteps,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
+              fields: [
+                {
+                  name: 'exampleResults',
+                  type: 'array',
+                  admin: {
+                    description: 'Result image variations shown in the gallery.',
+                  },
+                  fields: [
+                    { name: 'image', type: 'upload', relationTo: 'media', required: true },
+                    { name: 'note', type: 'text' },
+                  ],
+                },
               ],
             },
           ],
@@ -206,31 +261,61 @@ export const Prompts: CollectionConfig = {
           label: 'SEO & Article',
           fields: [
             {
-              name: 'quickAnswer',
-              type: 'textarea',
-              admin: { description: 'Direct, citable 1–2 sentence summary shown at the top of the page.' },
-            },
-            {
-              name: 'article',
-              type: 'group',
+              type: 'collapsible',
+              label: 'Quick Answer',
+              admin: {
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
               fields: [
-                { name: 'heading', type: 'text' },
                 {
-                  name: 'body',
-                  type: 'richText',
-                  admin: {
-                    description: 'The long-form "why this prompt works" content. Use headings, bullet lists, and bold text as needed.',
-                  },
+                  name: 'quickAnswer',
+                  type: 'textarea',
+                  admin: { description: 'Direct, citable 1–2 sentence summary shown at the top of the page.' },
                 },
               ],
             },
             {
-              name: 'faqs',
-              type: 'array',
-              admin: { description: 'Ships as FAQPage JSON-LD schema on the frontend.' },
+              type: 'collapsible',
+              label: 'Article',
+              admin: {
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
               fields: [
-                { name: 'question', type: 'text', required: true },
-                { name: 'answer', type: 'textarea', required: true },
+                {
+                  name: 'article',
+                  type: 'group',
+                  fields: [
+                    { name: 'heading', type: 'text' },
+                    {
+                      name: 'body',
+                      type: 'richText',
+                      admin: {
+                        description: 'The long-form "why this prompt works" content. Use headings, bullet lists, and bold text as needed.',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'FAQs',
+              admin: {
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
+              fields: [
+                {
+                  name: 'faqs',
+                  type: 'array',
+                  admin: { description: 'Ships as FAQPage JSON-LD schema on the frontend.' },
+                  fields: [
+                    { name: 'question', type: 'text', required: true },
+                    { name: 'answer', type: 'textarea', required: true },
+                  ],
+                },
               ],
             },
           ],
@@ -239,10 +324,20 @@ export const Prompts: CollectionConfig = {
           label: 'Related',
           fields: [
             {
-              name: 'similarPrompts',
-              type: 'relationship',
-              relationTo: 'prompts',
-              hasMany: true,
+              type: 'collapsible',
+              label: 'Similar Prompts',
+              admin: {
+                initCollapsed: false,
+                components: { Label: '/components/admin/CardLabel#CardLabel' },
+              },
+              fields: [
+                {
+                  name: 'similarPrompts',
+                  type: 'relationship',
+                  relationTo: 'prompts',
+                  hasMany: true,
+                },
+              ],
             },
           ],
         },
