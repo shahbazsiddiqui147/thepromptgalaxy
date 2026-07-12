@@ -43,6 +43,7 @@ export default buildConfig({
         Icon: '/components/admin/Icon#Icon',
       },
       actions: ['/components/admin/ViewSiteAction#ViewSiteAction'],
+      afterNavLinks: ['/components/admin/SidebarIcons#SidebarIcons'],
     },
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts, Customers],
