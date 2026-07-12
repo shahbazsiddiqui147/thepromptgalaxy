@@ -16,30 +16,40 @@ export const ContentTypes: CollectionConfig = {
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
-      required: true,
-      unique: true,
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      unique: true,
-      admin: { description: 'Auto-generated from Name if left blank.' },
-    },
-    {
-      name: 'usesSteps',
-      type: 'checkbox',
-      defaultValue: false,
+      type: 'collapsible',
+      label: 'Details',
       admin: {
-        description:
-          'Does this content type use the ordered Steps list (like Chain) instead of a single Prompt Text field?',
+        initCollapsed: false,
+        components: { Label: '/components/admin/CardLabel#CardLabel' },
       },
-    },
-    {
-      name: 'sortOrder',
-      type: 'number',
-      defaultValue: 0,
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+          unique: true,
+        },
+        {
+          name: 'slug',
+          type: 'text',
+          unique: true,
+          admin: { description: 'Auto-generated from Name if left blank.' },
+        },
+        {
+          name: 'usesSteps',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            description:
+              'Does this content type use the ordered Steps list (like Chain) instead of a single Prompt Text field?',
+          },
+        },
+        {
+          name: 'sortOrder',
+          type: 'number',
+          defaultValue: 0,
+        },
+      ],
     },
   ],
 }

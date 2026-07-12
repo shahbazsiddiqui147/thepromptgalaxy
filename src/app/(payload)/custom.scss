@@ -1,3 +1,127 @@
 .nav {
   border-right: 2px solid #c9a227;
 }
+
+/* ------------------------------------------------------------------ */
+/* Task B2: global admin visual pass                                   */
+/* Sidebar nav / Publish + Save buttons / Status pill / Tabs           */
+/*                                                                      */
+/* This file is imported unlayered (see layout.tsx), while Payload's   */
+/* own styles ship inside `@layer payload-default`. Per the CSS        */
+/* cascade-layers spec, unlayered rules always beat layered ones       */
+/* regardless of selector specificity or source order, so plain class  */
+/* selectors below are enough to win without `!important`.             */
+/* ------------------------------------------------------------------ */
+
+/* 1) Sidebar nav — active link accent
+   Confirmed in @payloadcms/next/dist/elements/Nav/index.client.js:
+   the active nav link renders a child `<div className="nav__link-indicator">`
+   inside `.nav__link` whenever `pathname.startsWith(href)`. Payload does
+   not add an `.active` class to `.nav__link` itself in this version, so
+   `:has()` on the indicator is the real active-link hook. */
+.nav__link:has(.nav__link-indicator) {
+  background-color: #f7efd9;
+  margin-inline-start: calc(var(--nav-padding-inline-start, 0px) * -1);
+  padding-inline-start: var(--nav-padding-inline-start, 0px);
+  margin-inline-end: calc(var(--nav-padding-inline-end, 0px) * -1);
+  padding-inline-end: var(--nav-padding-inline-end, 0px);
+}
+
+.nav__link-indicator {
+  width: 3px;
+  background-color: #c9a227;
+}
+
+/* 2) Publish / Save draft buttons
+   Confirmed in @payloadcms/ui/dist/elements/PublishButton/index.js and
+   .../elements/SaveDraftButton/index.js: the buttons carry stable ids
+   `action-save` (Publish changes) and `action-save-draft` (Save draft),
+   always rendered on the actual <button> element regardless of whether
+   a submenu popup wraps it. Payload's Button component (elements/Button/
+   index.scss) drives its look entirely off CSS custom properties
+   (--bg-color, --color, --btn-border, --btn-font-weight, --hover-*), so
+   we override those rather than fighting `.btn--style-primary` specificity.
+   Disabled state is guarded via [aria-disabled="true"], which Button
+   always sets on the id'd element itself (unlike `.btn--disabled`, which
+   can end up on a wrapping popup div instead). */
+#action-save:not([aria-disabled='true']) {
+  --bg-color: #c9a227;
+  --color: #2b2408;
+  --btn-border: 1px solid #c9a227;
+  --btn-font-weight: 700;
+  --hover-bg: #b6931f;
+  --hover-color: #2b2408;
+  --hover-btn-border: 1px solid #b6931f;
+}
+
+#action-save-draft:not([aria-disabled='true']) {
+  --hover-btn-border: 1px solid #c9a227;
+  --hover-color: #8a6716;
+}
+
+/* 3) Status pill
+   Confirmed in @payloadcms/ui/dist/elements/Status/index.js: there is no
+   status-specific class or data attribute (e.g. no `.status--published`)
+   in this installed version — the only per-status signal is the
+   translated text itself, exposed via the outer `title` attribute:
+   `title="Status: Published"` / `"Status: Draft"` / `"Status: Changed"`
+   (see @payloadcms/translations/dist/languages/en.js: draft: 'Draft',
+   published: 'Published', changed: 'Changed',
+   previouslyDraft: 'Previously a Draft', previouslyPublished:
+   'Previously Published'). We key off that with attribute selectors.
+   Known limitation: this only colors the pill correctly when the admin
+   UI language is English (Payload's default) — other locales fall back
+   to the neutral badge below. That's an acceptable degrade (shape/pill
+   look still applies) given there is no locale-independent CSS hook. */
+.status__value {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 600;
+  background-color: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+}
+
+.status[title$='Published'] .status__value {
+  background-color: #e6f4ea;
+  color: #2a6e3f;
+}
+
+.status[title$='Draft'] .status__value,
+.status[title$='Changed'] .status__value {
+  background-color: #fbf0dc;
+  color: #8a6716;
+}
+
+/* 4) Tabs — active tab underline
+   Confirmed in @payloadcms/ui/dist/fields/Tabs/Tab/index.js: the active
+   tab button gets `tabs-field__tab-button--active`. Its `:after`
+   pseudo-element already provides the 2px underline bar (via
+   `opacity: 1 !important; height: 2px !important;` in fields/Tabs/Tab/
+   index.scss); only the color needs overriding since that rule doesn't
+   touch `background`. */
+.tabs-field__tab-button--active:after {
+  background-color: #c9a227;
+}
+
+/* 5) Repeater rows (Steps, Example Results, FAQs, Helps/Hurts) and the
+   collapsible "card" fields from the Basic Info / Prompt Content / SEO &
+   Article / Taxonomy redesign all render through the SAME underlying
+   Collapsible element (confirmed: @payloadcms/ui/dist/fields/Array/
+   ArrayRow.js imports and wraps each row in the shared Collapsible
+   component, `elements/Collapsible/index.js`) -- so this one rule already
+   covers array rows and cards together, matching the "consistent card
+   language across grouped fields and repeaters" goal without duplicating
+   card-specific CSS. Payload's own defaults already give a bordered,
+   rounded, shaded-header box (fields/Collapsible + elements/Collapsible
+   SCSS) -- this only adds a gold hover accent on the header row for
+   interactive feedback, consistent with the rest of this redesign's accent
+   color, and a touch more breathing room between rows. */
+.collapsible__toggle-wrap:hover {
+  background-color: #f7efd9;
+}
+
+.array-field__draggable-rows {
+  gap: calc(var(--base) * 0.75);
+}
