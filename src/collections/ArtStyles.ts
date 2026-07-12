@@ -28,12 +28,13 @@ export const ArtStyles: CollectionConfig = {
           type: 'text',
           required: true,
           unique: true,
+          admin: { components: { Cell: '/components/admin/RowActions#RowActions' } },
         },
         {
           name: 'slug',
           type: 'text',
           unique: true,
-          admin: { description: 'Auto-generated from Name if left blank.' },
+          admin: { readOnly: true, description: 'Auto-generated from Name.' },
         },
         {
           name: 'colorHex',

@@ -14,9 +14,13 @@ export function slugify(value: string): string {
 
 export function autoSlugHook(sourceField: string): CollectionBeforeValidateHook {
   return async ({ data, originalDoc, req, collection }) => {
-    const currentSlug = data?.slug ?? originalDoc?.slug
+    // Always derive the slug from the source field on every save -- the
+    // Slug field is admin.readOnly (display-only) precisely because this
+    // hook owns it unconditionally now, not just as a fallback for when it
+    // was left blank. A doc keeps its own slug across an unrelated re-save
+    // since the uniqueness check below excludes originalDoc.id.
     const source = data?.[sourceField] ?? originalDoc?.[sourceField]
-    if (!currentSlug && source) {
+    if (source) {
       const base = slugify(source)
       let candidate = base
       let suffix = 2
