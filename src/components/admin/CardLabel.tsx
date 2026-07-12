@@ -8,6 +8,8 @@ import {
   Sparkles,
   HelpCircle,
   Link2,
+  Palette,
+  Wrench,
 } from 'lucide-react'
 import type { GenericLabelProps } from 'payload'
 
@@ -28,6 +30,10 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; color?: string 
   Article: FileText,
   FAQs: HelpCircle,
   'Similar Prompts': Link2,
+  Details: FileText,
+  Icon: ImageIcon,
+  'Word Choice Guide': Palette,
+  Capabilities: Wrench,
 }
 
 const GOLD = '#C9A227'
