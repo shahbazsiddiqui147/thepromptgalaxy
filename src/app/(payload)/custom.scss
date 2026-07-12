@@ -104,3 +104,24 @@
 .tabs-field__tab-button--active:after {
   background-color: #c9a227;
 }
+
+/* 5) Repeater rows (Steps, Example Results, FAQs, Helps/Hurts) and the
+   collapsible "card" fields from the Basic Info / Prompt Content / SEO &
+   Article / Taxonomy redesign all render through the SAME underlying
+   Collapsible element (confirmed: @payloadcms/ui/dist/fields/Array/
+   ArrayRow.js imports and wraps each row in the shared Collapsible
+   component, `elements/Collapsible/index.js`) -- so this one rule already
+   covers array rows and cards together, matching the "consistent card
+   language across grouped fields and repeaters" goal without duplicating
+   card-specific CSS. Payload's own defaults already give a bordered,
+   rounded, shaded-header box (fields/Collapsible + elements/Collapsible
+   SCSS) -- this only adds a gold hover accent on the header row for
+   interactive feedback, consistent with the rest of this redesign's accent
+   color, and a touch more breathing room between rows. */
+.collapsible__toggle-wrap:hover {
+  background-color: #f7efd9;
+}
+
+.array-field__draggable-rows {
+  gap: calc(var(--base) * 0.75);
+}
