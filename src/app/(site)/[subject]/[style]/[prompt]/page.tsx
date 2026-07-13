@@ -90,6 +90,8 @@ export default async function PromptPage({
 
   return (
     <div className="wrap" style={{ padding: '24px 24px 56px' }}>
+      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.leaderboardCode} />}
+
       <Breadcrumbs
         crumbs={[
           { label: 'Home', href: '/' },
@@ -98,8 +100,6 @@ export default async function PromptPage({
           { label: prompt.title, href: `/${subject.slug}/${artStyle.slug}/${prompt.slug}/` },
         ]}
       />
-
-      {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.leaderboardCode} />}
 
       <h1 className="display" style={{ fontSize: 'clamp(28px, 5vw, 46px)', margin: '12px 0' }}>
         {prompt.title}
@@ -115,11 +115,26 @@ export default async function PromptPage({
         <span className="mono" style={{ background: 'var(--steel)', color: 'var(--paper)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}>
           {artStyle.name}
         </span>
-        <span className="mono" style={{ background: 'var(--rust)', color: 'var(--paper)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}>
+        <span className="mono" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'var(--rust)', color: 'var(--paper)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}>
+          {prompt.contentTypeUsesSteps ? (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path d="M9 17H7A5 5 0 0 1 7 7h2" />
+              <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+          ) : (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+            </svg>
+          )}
           {prompt.contentTypeUsesSteps ? 'Chain' : 'Single-frame'}
         </span>
         {prompt.referenceRequired && (
-          <span className="mono" style={{ border: '1px solid var(--amber)', color: 'var(--amber)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}>
+          <span className="mono" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, border: '1px solid var(--amber)', color: 'var(--amber)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+              <circle cx="12" cy="13" r="3" />
+            </svg>
             Reference image required{prompt.referenceNote ? ` — ${prompt.referenceNote}` : ''}
           </span>
         )}

@@ -36,13 +36,21 @@ export function SaveButton({ promptId }: { promptId: number }) {
   }, [promptId])
 
   const baseStyle = {
-    display: 'inline-block',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
     borderRadius: 4,
     padding: '8px 14px',
     fontSize: 11,
     letterSpacing: '0.05em',
     cursor: 'pointer',
   } as const
+
+  const HeartIcon = ({ filled }: { filled: boolean }) => (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M19 14c1.5-1.5 3-3.28 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.22 1.5 4 3 5.5l7 7Z" />
+    </svg>
+  )
 
   if (status === 'loading') {
     // Reserve the same footprint so the layout doesn't jump once resolved,
@@ -70,13 +78,15 @@ export function SaveButton({ promptId }: { promptId: number }) {
         className="mono"
         style={{
           ...baseStyle,
-          border: '1px solid var(--border)',
-          background: 'var(--ink-panel)',
-          color: 'var(--paper)',
+          border: '1px solid var(--amber)',
+          background: 'var(--amber)',
+          color: 'var(--ink)',
+          fontWeight: 700,
           textDecoration: 'none',
         }}
       >
-        Save to collection
+        <HeartIcon filled={false} />
+        Save
       </Link>
     )
   }
@@ -106,16 +116,30 @@ export function SaveButton({ promptId }: { promptId: number }) {
       onClick={toggle}
       disabled={pending}
       className="mono"
-      style={{
-        ...baseStyle,
-        border: `1px solid ${saved ? 'var(--amber)' : 'var(--border)'}`,
-        background: 'var(--ink-panel)',
-        color: saved ? 'var(--amber)' : 'var(--paper)',
-        opacity: pending ? 0.6 : 1,
-        cursor: pending ? 'default' : 'pointer',
-      }}
+      style={
+        saved
+          ? {
+              ...baseStyle,
+              border: '1px solid var(--amber)',
+              background: 'transparent',
+              color: 'var(--amber)',
+              fontWeight: 700,
+              opacity: pending ? 0.6 : 1,
+              cursor: pending ? 'default' : 'pointer',
+            }
+          : {
+              ...baseStyle,
+              border: '1px solid var(--amber)',
+              background: 'var(--amber)',
+              color: 'var(--ink)',
+              fontWeight: 700,
+              opacity: pending ? 0.6 : 1,
+              cursor: pending ? 'default' : 'pointer',
+            }
+      }
     >
-      {saved ? 'Saved ✓' : 'Save to collection'}
+      <HeartIcon filled={saved} />
+      {saved ? 'Saved' : 'Save'}
     </button>
   )
 }
