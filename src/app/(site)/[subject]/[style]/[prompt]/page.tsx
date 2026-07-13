@@ -242,6 +242,43 @@ export default async function PromptPage({
           )}
 
           {adsEnabled && <AdSlotSection label="AD SLOT" code={adSettings.inContentCode} />}
+
+          <div style={{ marginTop: 32 }}>
+            <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
+              TESTED ON
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {toolEntries.map((entry, i) => {
+                const tool = typeof entry.tool === 'object' ? entry.tool : undefined
+                if (!tool) return null
+                return (
+                  <div
+                    key={entry.id ?? tool.id ?? i}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}
+                  >
+                    <span style={{ fontWeight: 600, fontSize: 13.5 }}>{tool.name}</span>
+                    <span
+                      className="mono"
+                      style={{ border: '1px solid var(--sage)', color: 'var(--sage)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}
+                    >
+                      {entry.fit === 'great' ? 'Great Fit' : 'Good Fit'}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {prompt.article?.heading && (
+            <div style={{ marginTop: 40 }}>
+              <h2 className="display" style={{ fontSize: 28 }}>{prompt.article.heading}</h2>
+              {prompt.article.body && (
+                <div style={{ color: '#B8BEDA', fontSize: 14.5, lineHeight: 1.7 }}>
+                  <RichText data={prompt.article.body} />
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div>
@@ -294,43 +331,6 @@ export default async function PromptPage({
           })()}
         </div>
       </div>
-
-      <div style={{ marginTop: 32 }}>
-        <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
-          TESTED ON
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {toolEntries.map((entry, i) => {
-            const tool = typeof entry.tool === 'object' ? entry.tool : undefined
-            if (!tool) return null
-            return (
-              <div
-                key={entry.id ?? tool.id ?? i}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--ink-panel)', border: '1px solid var(--border)', borderRadius: 4, padding: '10px 14px' }}
-              >
-                <span style={{ fontWeight: 600, fontSize: 13.5 }}>{tool.name}</span>
-                <span
-                  className="mono"
-                  style={{ border: '1px solid var(--sage)', color: 'var(--sage)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}
-                >
-                  {entry.fit === 'great' ? 'Great Fit' : 'Good Fit'}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {prompt.article?.heading && (
-        <div style={{ marginTop: 40, maxWidth: 620 }}>
-          <h2 className="display" style={{ fontSize: 28 }}>{prompt.article.heading}</h2>
-          {prompt.article.body && (
-            <div style={{ color: '#B8BEDA', fontSize: 14.5, lineHeight: 1.7 }}>
-              <RichText data={prompt.article.body} />
-            </div>
-          )}
-        </div>
-      )}
 
       {(prompt.faqs ?? []).length > 0 && (
         <FaqAccordion
