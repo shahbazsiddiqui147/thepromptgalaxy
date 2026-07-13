@@ -24,8 +24,8 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
           {i === crumbs.length - 1 ? (
             <span>{crumb.label}</span>
           ) : (
-            <Link href={crumb.href} style={{ color: 'var(--fade)' }}>
-              {crumb.label}
+            <Link href={crumb.href} style={{ color: 'var(--fade)', textDecoration: 'none' }}>
+              {i === 0 ? `← ${crumb.label.toUpperCase()}` : crumb.label}
             </Link>
           )}
         </span>

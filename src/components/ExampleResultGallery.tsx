@@ -36,8 +36,8 @@ export function ExampleResultGallery({
           <>
             <div
               style={{
-                width: 120,
-                height: 120,
+                width: 180,
+                height: 180,
                 borderRadius: 4,
                 border: '1px dashed var(--border)',
                 background: 'var(--ink-panel)',
@@ -45,16 +45,16 @@ export function ExampleResultGallery({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6,
+                gap: 8,
                 color: 'var(--fade)',
                 flexShrink: 0,
               }}
             >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" />
               </svg>
-              <span className="mono" style={{ fontSize: 9.5, textAlign: 'center', padding: '0 8px' }}>
+              <span className="mono" style={{ fontSize: 10, textAlign: 'center', padding: '0 8px' }}>
                 your reference photo
               </span>
             </div>
@@ -64,8 +64,10 @@ export function ExampleResultGallery({
 
         <div
           style={{
-            width: 200,
-            height: 150,
+            flex: '1 1 260px',
+            minWidth: 200,
+            maxWidth: 320,
+            height: 180,
             borderRadius: 4,
             overflow: 'hidden',
             position: 'relative',
@@ -74,12 +76,26 @@ export function ExampleResultGallery({
             flexShrink: 0,
           }}
         >
+          <span
+            className="mono"
+            style={{
+              position: 'absolute',
+              top: 8,
+              right: 10,
+              fontSize: 9,
+              letterSpacing: '0.1em',
+              color: 'var(--fade)',
+              zIndex: 1,
+            }}
+          >
+            EXAMPLE OUTPUT
+          </span>
           {currentUrl ? (
             <Image
               src={currentUrl}
               alt={current.alt || promptTitle}
               fill
-              sizes="200px"
+              sizes="320px"
               style={{ objectFit: 'cover' }}
             />
           ) : (
