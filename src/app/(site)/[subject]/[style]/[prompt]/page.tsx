@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getPromptBySlug, getAdSettings, getSavedCount } from '@/lib/queries'
 import { QuickAnswer } from '@/components/QuickAnswer'
@@ -10,7 +11,6 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { SaveButton } from '@/components/SaveButton'
 import { AdSlot } from '@/components/AdSlot'
 import { ExampleResultGallery } from '@/components/ExampleResultGallery'
-import { PromptCard } from '@/components/PromptCard'
 import type { Subject, ArtStyle, Tool, Media, Prompt } from '@/payload-types'
 
 export const revalidate = 3600
@@ -266,10 +266,28 @@ export default async function PromptPage({
                 <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 10 }}>
                   SIMILAR PROMPTS
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {similar.map((p) => (
-                    <PromptCard key={p.id} prompt={p} />
-                  ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {similar.map((p) => {
+                    const pSubject = p.subject as Subject
+                    const pStyle = p.artStyle as ArtStyle
+                    return (
+                      <Link
+                        key={p.id}
+                        href={`/${pSubject.slug}/${pStyle.slug}/${p.slug}/`}
+                        style={{
+                          display: 'block',
+                          border: '1px solid var(--border)',
+                          borderRadius: 4,
+                          padding: '10px 14px',
+                          fontSize: 13,
+                          color: 'var(--paper)',
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {p.title}
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
             )
@@ -293,11 +311,7 @@ export default async function PromptPage({
                 <span style={{ fontWeight: 600, fontSize: 13.5 }}>{tool.name}</span>
                 <span
                   className="mono"
-                  style={
-                    entry.fit === 'great'
-                      ? { background: 'var(--amber)', color: 'var(--ink)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
-                      : { border: '1px solid var(--amber)', color: 'var(--amber)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }
-                  }
+                  style={{ border: '1px solid var(--sage)', color: 'var(--sage)', padding: '4px 9px', borderRadius: 2, fontSize: 11 }}
                 >
                   {entry.fit === 'great' ? 'Great Fit' : 'Good Fit'}
                 </span>
@@ -309,7 +323,7 @@ export default async function PromptPage({
 
       {prompt.article?.heading && (
         <div style={{ marginTop: 40, maxWidth: 620 }}>
-          <h2 className="display" style={{ fontSize: 22 }}>{prompt.article.heading}</h2>
+          <h2 className="display" style={{ fontSize: 28 }}>{prompt.article.heading}</h2>
           {prompt.article.body && (
             <div style={{ color: '#B8BEDA', fontSize: 14.5, lineHeight: 1.7 }}>
               <RichText data={prompt.article.body} />
