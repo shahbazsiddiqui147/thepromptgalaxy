@@ -52,6 +52,30 @@ export function SaveButton({ promptId }: { promptId: number }) {
     </svg>
   )
 
+  // Visual placeholder only, matching the approved mockup's second button --
+  // no "collections" feature exists yet, so this intentionally has no
+  // onClick/href. Revisit once that feature is actually scoped.
+  const CollectButton = () => (
+    <button
+      type="button"
+      className="mono"
+      title="Collections coming soon"
+      style={{
+        ...baseStyle,
+        border: '1px solid var(--border)',
+        background: 'transparent',
+        color: 'var(--fade)',
+        fontWeight: 700,
+        cursor: 'default',
+      }}
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <path d="M19 21 12 16l-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+      </svg>
+      Collect
+    </button>
+  )
+
   if (status === 'loading') {
     // Reserve the same footprint so the layout doesn't jump once resolved,
     // without flashing either the logged-out or logged-in state.
@@ -73,21 +97,24 @@ export function SaveButton({ promptId }: { promptId: number }) {
 
   if (status === 'anonymous') {
     return (
-      <Link
-        href="/login"
-        className="mono"
-        style={{
-          ...baseStyle,
-          border: '1px solid var(--amber)',
-          background: 'var(--amber)',
-          color: 'var(--ink)',
-          fontWeight: 700,
-          textDecoration: 'none',
-        }}
-      >
-        <HeartIcon filled={false} />
-        Save
-      </Link>
+      <>
+        <Link
+          href="/login"
+          className="mono"
+          style={{
+            ...baseStyle,
+            border: '1px solid var(--amber)',
+            background: 'transparent',
+            color: 'var(--amber)',
+            fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          <HeartIcon filled={false} />
+          Save
+        </Link>
+        <CollectButton />
+      </>
     )
   }
 
@@ -111,35 +138,38 @@ export function SaveButton({ promptId }: { promptId: number }) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      disabled={pending}
-      className="mono"
-      style={
-        saved
-          ? {
-              ...baseStyle,
-              border: '1px solid var(--amber)',
-              background: 'transparent',
-              color: 'var(--amber)',
-              fontWeight: 700,
-              opacity: pending ? 0.6 : 1,
-              cursor: pending ? 'default' : 'pointer',
-            }
-          : {
-              ...baseStyle,
-              border: '1px solid var(--amber)',
-              background: 'var(--amber)',
-              color: 'var(--ink)',
-              fontWeight: 700,
-              opacity: pending ? 0.6 : 1,
-              cursor: pending ? 'default' : 'pointer',
-            }
-      }
-    >
-      <HeartIcon filled={saved} />
-      {saved ? 'Saved' : 'Save'}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={toggle}
+        disabled={pending}
+        className="mono"
+        style={
+          saved
+            ? {
+                ...baseStyle,
+                border: '1px solid var(--amber)',
+                background: 'var(--amber)',
+                color: 'var(--ink)',
+                fontWeight: 700,
+                opacity: pending ? 0.6 : 1,
+                cursor: pending ? 'default' : 'pointer',
+              }
+            : {
+                ...baseStyle,
+                border: '1px solid var(--amber)',
+                background: 'transparent',
+                color: 'var(--amber)',
+                fontWeight: 700,
+                opacity: pending ? 0.6 : 1,
+                cursor: pending ? 'default' : 'pointer',
+              }
+        }
+      >
+        <HeartIcon filled={saved} />
+        {saved ? 'Saved' : 'Save'}
+      </button>
+      <CollectButton />
+    </>
   )
 }
