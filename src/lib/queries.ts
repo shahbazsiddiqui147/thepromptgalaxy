@@ -13,6 +13,11 @@ export const getAdSettings = cache(async () => {
   return payload.findGlobal({ slug: 'ad-settings' })
 })
 
+export const getSiteSettings = cache(async () => {
+  const payload = await getPayloadClient()
+  return payload.findGlobal({ slug: 'site-settings' })
+})
+
 export async function getSubjects(): Promise<Subject[]> {
   const payload = await getPayloadClient()
   const result = await payload.find({ collection: 'subjects', limit: 100, sort: 'sortOrder' })

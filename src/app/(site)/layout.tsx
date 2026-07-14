@@ -1,16 +1,26 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { anton, archivo, jetbrainsMono } from './fonts'
 import { SearchForm } from '@/components/SearchForm'
 import { getCurrentCustomer } from '@/lib/customerAuth'
+import { getSiteSettings } from '@/lib/queries'
+import type { Media } from '@/payload-types'
 import './globals.css'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'The Prompt Galaxy',
-    template: '%s — The Prompt Galaxy',
-  },
-  description: 'Every look, every tool, charted in one place.',
+export async function generateMetadata(): Promise<Metadata> {
+  const siteSettings = await getSiteSettings()
+  const favicon = typeof siteSettings.favicon === 'object' ? (siteSettings.favicon as Media | null) : null
+  const faviconUrl = favicon?.url
+
+  return {
+    title: {
+      default: 'The Prompt Galaxy',
+      template: '%s — The Prompt Galaxy',
+    },
+    description: 'Every look, every tool, charted in one place.',
+    icons: faviconUrl ? { icon: faviconUrl } : undefined,
+  }
 }
 
 const navLinks = [
@@ -25,6 +35,9 @@ const navLinks = [
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const customer = await getCurrentCustomer()
+  const siteSettings = await getSiteSettings()
+  const logo = typeof siteSettings.logo === 'object' ? (siteSettings.logo as Media | null) : null
+  const logoUrl = logo?.url
 
   return (
     <html lang="en" className={`${anton.variable} ${archivo.variable} ${jetbrainsMono.variable}`}>
@@ -41,8 +54,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             gap: 16,
           }}
         >
-          <Link href="/" style={{ color: 'var(--paper)', textDecoration: 'none' }} className="display">
-            THE PROMPT GALAXY
+          <Link href="/" style={{ color: 'var(--paper)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            {logoUrl ? (
+              <Image src={logoUrl} alt={logo?.alt || 'The Prompt Galaxy'} width={160} height={32} style={{ height: 32, width: 'auto' }} priority />
+            ) : (
+              <span className="display">THE PROMPT GALAXY</span>
+            )}
           </Link>
           <nav style={{ display: 'flex', gap: 20 }}>
             {navLinks.map((link) => (

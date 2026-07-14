@@ -14,6 +14,7 @@ import { ContentTypes } from './collections/ContentTypes'
 import { Prompts } from './collections/Prompts'
 import { Customers } from './collections/Customers'
 import { AdSettings } from './globals/AdSettings'
+import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -47,7 +48,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Subjects, ArtStyles, Tools, ContentTypes, Prompts, Customers],
-  globals: [AdSettings],
+  globals: [AdSettings, SiteSettings],
   // Default features already cover headings/lists/links/bold/italic etc; the
   // only thing missing was a persistent toolbar -- lexicalEditor()'s default
   // feature set relies on a floating selection toolbar only, which reads as
