@@ -16,6 +16,9 @@ export const SiteSettings: GlobalConfig = {
       relationTo: 'media',
       admin: {
         description: 'Shown in the site header in place of the text wordmark. Leave blank to keep the text logo.',
+        components: {
+          Field: '/components/admin/InlineUpload#InlineUpload',
+        },
       },
     },
     {
@@ -24,6 +27,9 @@ export const SiteSettings: GlobalConfig = {
       relationTo: 'media',
       admin: {
         description: 'Browser tab icon. PNG or SVG, square aspect ratio recommended.',
+        components: {
+          Field: '/components/admin/InlineUpload#InlineUpload',
+        },
       },
     },
   ],
