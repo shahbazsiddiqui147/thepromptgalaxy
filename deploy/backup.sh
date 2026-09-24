@@ -29,8 +29,11 @@ if [ -d "$UPLOADS_DIR" ]; then
   ln -sfn "$UP_FILE" "$BACKUP_DIR/latest-uploads.tar.gz"
 fi
 
-# Keep the newest $KEEP of each kind.
-ls -1t "$BACKUP_DIR"/db-*.dump 2>/dev/null | tail -n +"$((KEEP + 1))" | xargs -r rm --
-ls -1t "$BACKUP_DIR"/uploads-*.tar.gz 2>/dev/null | tail -n +"$((KEEP + 1))" | xargs -r rm --
+# Keep the newest $KEEP of each kind. A kind with no files yet (for example uploads) is not an error.
+rotate() {
+  { ls -1t "$BACKUP_DIR"/$1 2>/dev/null || true; } | tail -n +"$((KEEP + 1))" | xargs -r rm --
+}
+rotate 'db-*.dump'
+rotate 'uploads-*.tar.gz'
 
 echo "$(date -Is) OK: $(basename "$DB_FILE") $(stat -c %s "$DB_FILE") bytes"
