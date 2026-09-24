@@ -12,8 +12,9 @@ $log = Join-Path $dest 'pull.log'
 function Log($message) { Add-Content -Path $log -Value "$(Get-Date -Format s) $message" }
 
 function Pull($latestName, $pattern) {
-  $real = (& ssh -i $key -o BatchMode=yes -o ConnectTimeout=20 $server "readlink -f $remoteDir/$latestName 2>/dev/null").Trim()
-  if (-not $real) { return $false }
+  $output = & ssh -i $key -o BatchMode=yes -o ConnectTimeout=20 $server "test -e $remoteDir/$latestName && readlink -f $remoteDir/$latestName"
+  if (-not $output) { return $false }
+  $real = ([string]$output).Trim()
   $name = Split-Path $real -Leaf
   $target = Join-Path $dest $name
   if (Test-Path $target) { Log "already have $name"; return $true }
