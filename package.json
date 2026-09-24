@@ -1,43 +1,36 @@
 {
   "name": "thepromptgalaxy",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
-    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "seed": "cross-env NODE_OPTIONS=--no-deprecation node --env-file=.env --import tsx scripts/seed.ts",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "migrate": "node --env-file=.env --import tsx scripts/migrate.ts",
+    "create-admin": "node --env-file=.env --import tsx scripts/create-admin.ts"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "3.85.2",
-    "@payloadcms/next": "3.85.2",
-    "@payloadcms/richtext-lexical": "3.85.2",
-    "@payloadcms/ui": "3.85.2",
-    "cross-env": "10.1.0",
-    "graphql": "^16.8.1",
-    "lucide-react": "^1.24.0",
     "next": "16.2.10",
-    "payload": "3.85.2",
+    "pg": "^8.13.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "sharp": "0.35.3"
   },
   "devDependencies": {
     "@types/node": "24.12.3",
+    "@types/pg": "^8.11.10",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
-    "eslint": "^9.16.0",
-    "eslint-config-next": "16.2.10",
     "tsx": "4.22.4",
-    "typescript": "6.0.3"
-  },
-  "engines": {
-    "node": ">=20.6.0"
+    "typescript": "6.0.3",
+    "vitest": "^3.2.4"
   }
 }

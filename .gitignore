@@ -36,3 +36,7 @@ docs/session-secrets.local.md
 
 /media
 payload-types.ts
+
+# uploads (media plan 1B)
+/uploads
+.playwright-mcp/
