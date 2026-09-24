@@ -27,6 +27,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {user.displayName}
           <br />
           <span>{user.role}</span>
+          <br />
+          <Link href="/account/password/">Change password</Link>
           <form action={logoutAction} className="inline-form">
             <button className="link" type="submit">
               Log out

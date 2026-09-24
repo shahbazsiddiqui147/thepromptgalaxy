@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-import { login } from '@/lib/auth'
+import { changePassword, login } from '@/lib/auth'
 import { destroySession, getSessionUser, SESSION_TTL_MS } from '@/lib/session'
 import { createUser } from '@/lib/users'
 import { closeTestPool, resetDb } from '@/test/db'
@@ -38,6 +38,42 @@ describe('login', () => {
   it('rejects a disabled user', async () => {
     await pool.query('UPDATE users SET is_disabled = true WHERE id = $1', [userId])
     expect(await login(pool, 'owner@example.com', 'a-long-password')).toEqual({ ok: false })
+  })
+})
+
+describe('changePassword', () => {
+  it('changes the password so only the new one logs in', async () => {
+    expect(await changePassword(pool, userId, 'a-long-password', 'a-brand-new-password')).toEqual({ ok: true })
+    expect(await login(pool, 'owner@example.com', 'a-long-password')).toEqual({ ok: false })
+    expect((await login(pool, 'owner@example.com', 'a-brand-new-password')).ok).toBe(true)
+  })
+
+  it('rejects a wrong current password and leaves the password unchanged', async () => {
+    expect(await changePassword(pool, userId, 'not-my-password', 'a-brand-new-password')).toEqual({
+      ok: false,
+      error: 'Current password is incorrect.',
+    })
+    expect((await login(pool, 'owner@example.com', 'a-long-password')).ok).toBe(true)
+  })
+
+  it('rejects a short new password and one that equals the current one', async () => {
+    expect(await changePassword(pool, userId, 'a-long-password', 'short')).toEqual({
+      ok: false,
+      error: 'New password must be at least 10 characters.',
+    })
+    expect(await changePassword(pool, userId, 'a-long-password', 'a-long-password')).toEqual({
+      ok: false,
+      error: 'New password must be different from the current one.',
+    })
+  })
+
+  it('signs out every other session but keeps the current one', async () => {
+    const current = await login(pool, 'owner@example.com', 'a-long-password')
+    const other = await login(pool, 'owner@example.com', 'a-long-password')
+    if (!current.ok || !other.ok) throw new Error('login failed')
+    await changePassword(pool, userId, 'a-long-password', 'a-brand-new-password', current.token)
+    expect(await getSessionUser(pool, current.token)).not.toBeNull()
+    expect(await getSessionUser(pool, other.token)).toBeNull()
   })
 })
 
