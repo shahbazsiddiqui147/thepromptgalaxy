@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
+import { slugify } from '@/lib/slug'
 import type { FormState } from '@/registry/form-state'
 import type { FieldDef } from '@/registry/types'
 import { saveEntity } from './actions'
@@ -15,7 +16,9 @@ type Props = {
 
 const initial: FormState = { errors: {} }
 
-function FieldInput({ field, value, error }: { field: FieldDef; value: unknown; error?: string }) {
+type SlugControl = { value: string; onEdit: (value: string) => void }
+
+function FieldInput({ field, value, error, slug }: { field: FieldDef; value: unknown; error?: string; slug?: SlugControl }) {
   const id = `f-${field.name}`
   let control: React.ReactNode
   switch (field.type) {
@@ -45,7 +48,12 @@ function FieldInput({ field, value, error }: { field: FieldDef; value: unknown; 
       )
       break
     default:
-      control = <input id={id} name={field.name} className="input" type="text" defaultValue={String(value ?? '')} />
+      control =
+        field.type === 'slug' && slug ? (
+          <input id={id} name={field.name} className="input" type="text" value={slug.value} onChange={(e) => slug.onEdit(e.target.value)} />
+        ) : (
+          <input id={id} name={field.name} className="input" type="text" defaultValue={String(value ?? '')} />
+        )
   }
   return (
     <div className="field">
@@ -60,13 +68,30 @@ function FieldInput({ field, value, error }: { field: FieldDef; value: unknown; 
 export function EntityForm({ entityKey, singular, fields, id, values }: Props) {
   const [state, action, pending] = useActionState(saveEntity, initial)
   const current = { ...values, ...(state.values ?? {}) }
+  // On a new record the slug follows the name until it is edited by hand; existing records never change on their own.
+  const [slugValue, setSlugValue] = useState(String(current.slug ?? ''))
+  const [slugTouched, setSlugTouched] = useState(Boolean(id) || slugValue !== '')
+  const slug: SlugControl = {
+    value: slugValue,
+    onEdit: (next) => {
+      setSlugTouched(true)
+      setSlugValue(next)
+    },
+  }
   return (
-    <form action={action} className="form-grid">
+    <form
+      action={action}
+      className="form-grid"
+      onInput={(event) => {
+        const target = event.target as HTMLInputElement
+        if (target.name === 'name' && !slugTouched) setSlugValue(slugify(target.value))
+      }}
+    >
       <input type="hidden" name="__entity" value={entityKey} />
       {id ? <input type="hidden" name="__id" value={id} /> : null}
       {state.errors._ ? <div className="banner banner-error">{state.errors._}</div> : null}
       {fields.map((field) => (
-        <FieldInput key={field.name} field={field} value={current[field.name]} error={state.errors[field.name]} />
+        <FieldInput key={field.name} field={field} value={current[field.name]} error={state.errors[field.name]} slug={field.type === 'slug' ? slug : undefined} />
       ))}
       <div className="actions">
         <button className="btn btn-primary" disabled={pending}>

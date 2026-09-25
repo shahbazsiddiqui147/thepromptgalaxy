@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useMemo, useState } from 'react'
+import { slugify } from '@/lib/slug'
 import { MediaField } from '@/app/admin/_components/MediaField'
 import { RichTextField } from '@/app/admin/_components/RichTextField'
 import { PROMPT_STATUSES, type PromptFormState, type PromptInput, type PromptToolInput } from '@/prompts/types'
@@ -32,6 +33,8 @@ function normalizePrimary(tools: PromptToolInput[]): PromptToolInput[] {
 
 export function PromptForm({ id, initial, slugLocked, options }: Props) {
   const [p, setP] = useState<PromptInput>(initial)
+  // A new prompt's slug follows the title until it is edited by hand; saved prompts never change on their own.
+  const [slugTouched, setSlugTouched] = useState(Boolean(id) || initial.slug !== '')
   const [notice, setNotice] = useState<string | null>(null)
   const [state, action, pending] = useActionState(savePromptAction, initialState)
   const errors = state.errors
@@ -99,7 +102,7 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
       <h2>Basics</h2>
       <div className="field">
         <label htmlFor="title">Title *</label>
-        <input id="title" className="input" value={p.title} maxLength={140} onChange={(e) => update({ title: e.target.value })} />
+        <input id="title" className="input" value={p.title} maxLength={140} onChange={(e) => update(slugTouched ? { title: e.target.value } : { title: e.target.value, slug: slugify(e.target.value) })} />
         {errors.title ? <div className="field-error">{errors.title}</div> : null}
       </div>
       <div className="field">
@@ -108,9 +111,12 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
           id="slug"
           className="input"
           value={p.slug}
-          placeholder="Generated from the title"
+          placeholder="Filled in from the title"
           disabled={slugLocked && !p.changePublishedSlug}
-          onChange={(e) => update({ slug: e.target.value })}
+          onChange={(e) => {
+            setSlugTouched(true)
+            update({ slug: e.target.value })
+          }}
         />
         {slugLocked ? (
           <label className="check">
@@ -122,7 +128,7 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
             Change the published URL (the old address will redirect)
           </label>
         ) : (
-          <div className="field-help">Editable until the prompt is first published.</div>
+          <div className="field-help">Filled in from the title as you type. Editable until the prompt is first published.</div>
         )}
         {errors.slug ? <div className="field-error">{errors.slug}</div> : null}
       </div>

@@ -15,7 +15,7 @@ export const categories: EntityDef = {
   },
   fields: [
     { name: 'name', column: 'name', label: 'Name', type: 'text', required: true, maxLength: 80, list: true },
-    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Leave empty to generate it from the name.' },
+    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Filled in from the name as you type. Edit it only if you want a different address.' },
     { name: 'description', column: 'description', label: 'Description', type: 'textarea', maxLength: 500 },
     { name: 'sortOrder', column: 'sort_order', label: 'Sort order', type: 'number', default: 0, list: true },
     { name: 'isActive', column: 'is_active', label: 'Active', type: 'boolean', default: true, list: true, help: 'Inactive categories disappear from the public site.' },
@@ -40,7 +40,7 @@ export const tools: EntityDef = {
   },
   fields: [
     { name: 'name', column: 'name', label: 'Name', type: 'text', required: true, maxLength: 80, list: true },
-    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Leave empty to generate it from the name.' },
+    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Filled in from the name as you type. Edit it only if you want a different address.' },
     { name: 'vendor', column: 'vendor', label: 'Vendor', type: 'text', maxLength: 80, list: true },
     { name: 'sortOrder', column: 'sort_order', label: 'Sort order', type: 'number', default: 0, list: true },
     { name: 'isActive', column: 'is_active', label: 'Active', type: 'boolean', default: true, list: true, help: 'Inactive tools disappear from the public site.' },
@@ -64,7 +64,7 @@ export const styles: EntityDef = {
   },
   fields: [
     { name: 'name', column: 'name', label: 'Name', type: 'text', required: true, maxLength: 80, list: true },
-    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Leave empty to generate it from the name.' },
+    { name: 'slug', column: 'slug', label: 'Slug', type: 'slug', list: true, help: 'Filled in from the name as you type. Edit it only if you want a different address.' },
     { name: 'sortOrder', column: 'sort_order', label: 'Sort order', type: 'number', default: 0, list: true },
     { name: 'isActive', column: 'is_active', label: 'Active', type: 'boolean', default: true, list: true, help: 'Inactive styles disappear from the public site.' },
   ],
