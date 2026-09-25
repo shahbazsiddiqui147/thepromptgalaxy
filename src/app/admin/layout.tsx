@@ -22,7 +22,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {entity.plural}
           </Link>
         ))}
+        {canEditTaxonomy ? <Link href="/admin/prompts/">Prompts</Link> : null}
         {canEditTaxonomy ? <Link href="/admin/matrix/">Relations matrix</Link> : null}
+        {canEditTaxonomy ? <Link href="/admin/media/">Media</Link> : null}
         <div className="admin-user">
           {user.displayName}
           <br />
