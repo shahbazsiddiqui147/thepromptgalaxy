@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { archivo } from './fonts'
 import '@/styles/modernist.css'
 import '@/styles/admin.css'
+import '@/styles/site.css'
 
 export const metadata: Metadata = {
   title: 'ThePromptGalaxy',
