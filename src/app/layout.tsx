@@ -5,6 +5,7 @@ import '@/styles/admin.css'
 import '@/styles/site.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL ?? 'https://thepromptgalaxy.com'),
   title: 'ThePromptGalaxy',
 }
 
