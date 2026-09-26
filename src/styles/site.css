@@ -3,6 +3,8 @@
 .site-brand { display: flex; align-items: center; gap: 10px; margin-right: auto; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color: var(--color-text); text-decoration: none; }
 .site-brand i { width: 18px; height: 18px; background: var(--color-accent); display: block; }
 .site-nav .nav-link { font-size: 14px; font-weight: 600; }
+.site-search { width: 220px; }
+.site-search .input { padding: 7px 10px; font-size: 13px; width: 100%; }
 .social { display: flex; gap: 14px; align-items: center; }
 .social a { display: inline-flex; color: var(--color-text); }
 

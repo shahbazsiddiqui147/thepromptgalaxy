@@ -1,3 +1,4 @@
+import { sanitizeRichText } from '@/lib/sanitize'
 import type { FieldDef } from '@/registry/types'
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
@@ -6,7 +7,7 @@ export type ValidationResult =
   | { ok: true; value: Record<string, unknown> }
   | { ok: false; errors: Record<string, string> }
 
-const DEFAULT_MAX: Record<string, number> = { text: 200, textarea: 2000, slug: 80 }
+const DEFAULT_MAX: Record<string, number> = { text: 200, textarea: 2000, slug: 80, richtext: 60000 }
 
 export function validateInput(
   entity: { fields: FieldDef[] },
@@ -40,6 +41,14 @@ export function validateInput(
         } else {
           value[field.name] = text
         }
+        break
+      }
+      case 'richtext': {
+        const html = sanitizeRichText(String(input ?? ''))
+        const max = field.maxLength ?? DEFAULT_MAX.richtext
+        if (html === '' && field.required) errors[field.name] = 'Required'
+        else if (html.length > max) errors[field.name] = `Must be at most ${max} characters`
+        else value[field.name] = html
         break
       }
       default: {

@@ -1,6 +1,6 @@
 import type { Role } from '@/lib/roles'
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'slug'
+export type FieldType = 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'slug' | 'richtext'
 
 export type FieldDef = {
   /** camelCase key used in forms and in row objects. */
@@ -32,5 +32,7 @@ export type EntityDef = {
   roles: { read: Role[]; write: Role[] }
   /** When present and the count is > 0, deleting is blocked with this message. `sql` receives the id as $1. */
   usage?: { sql: string; message: (count: number) => string }
+  /** Slugs that must not be used because they would shadow a real route. */
+  reservedSlugs?: string[]
   fields: FieldDef[]
 }

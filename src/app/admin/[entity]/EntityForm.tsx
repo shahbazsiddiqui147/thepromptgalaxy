@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
+import { RichTextField } from '@/app/admin/_components/RichTextField'
 import { slugify } from '@/lib/slug'
 import type { FormState } from '@/registry/form-state'
 import type { FieldDef } from '@/registry/types'
@@ -15,6 +16,16 @@ type Props = {
 }
 
 const initial: FormState = { errors: {} }
+
+function RichInput({ field, value }: { field: FieldDef; value: unknown }) {
+  const [html, setHtml] = useState(String(value ?? ''))
+  return (
+    <>
+      <input type="hidden" name={field.name} value={html} />
+      <RichTextField label={field.label} value={html} onChange={setHtml} />
+    </>
+  )
+}
 
 type SlugControl = { value: string; onEdit: (value: string) => void }
 
@@ -35,6 +46,9 @@ function FieldInput({ field, value, error, slug }: { field: FieldDef; value: unk
           {field.label}
         </label>
       )
+      break
+    case 'richtext':
+      control = <RichInput field={field} value={value} />
       break
     case 'select':
       control = (
@@ -57,7 +71,7 @@ function FieldInput({ field, value, error, slug }: { field: FieldDef; value: unk
   }
   return (
     <div className="field">
-      {field.type === 'boolean' ? null : <label htmlFor={id}>{field.label}{field.required ? ' *' : ''}</label>}
+      {field.type === 'boolean' || field.type === 'richtext' ? null : <label htmlFor={id}>{field.label}{field.required ? ' *' : ''}</label>}
       {control}
       {field.help ? <div className="field-help">{field.help}</div> : null}
       {error ? <div className="field-error">{error}</div> : null}
@@ -84,7 +98,7 @@ export function EntityForm({ entityKey, singular, fields, id, values }: Props) {
       className="form-grid"
       onInput={(event) => {
         const target = event.target as HTMLInputElement
-        if (target.name === 'name' && !slugTouched) setSlugValue(slugify(target.value))
+        if ((target.name === 'name' || target.name === 'title') && !slugTouched) setSlugValue(slugify(target.value))
       }}
     >
       <input type="hidden" name="__entity" value={entityKey} />

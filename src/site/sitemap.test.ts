@@ -27,6 +27,7 @@ describe('getSitemapEntries', () => {
     await pool.query('UPDATE category_tools SET is_indexable = true WHERE category_id = $1', [hidden])
     await pool.query(`INSERT INTO prompts (slug, title, category_id, status, published_at) VALUES ('live','L',$1,'published',now()), ('draft','D',$1,'draft',NULL), ('gone','G',$2,'published',now())`, [portrait, hidden])
 
+    await pool.query(`INSERT INTO pages (slug, title, is_published) VALUES ('about','About',true), ('draftpage','Draft',false)`)
     const entries = await getSitemapEntries(pool)
     expect(entries.map((e) => e.path)).toEqual([
       '/',
@@ -35,6 +36,7 @@ describe('getSitemapEntries', () => {
       '/tool/midjourney/',
       '/style/cinematic/',
       '/category/portrait/?tool=midjourney',
+      '/about/',
       '/prompt/live/',
     ])
     expect(entries[entries.length - 1].lastModified).toBeInstanceOf(Date)

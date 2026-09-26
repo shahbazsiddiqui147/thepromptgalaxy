@@ -10,6 +10,11 @@ export type SaveResult = { ok: true; id: number } | { ok: false; errors: Record<
 export type DeleteResult = { ok: true } | { ok: false; reason: string }
 
 const SLUG_TAKEN = 'This slug is already in use.'
+const SLUG_RESERVED = 'This address is reserved by the site. Choose another.'
+
+function isReserved(entity: EntityDef, slug: string): boolean {
+  return entity.reservedSlugs?.includes(slug) ?? false
+}
 
 function selectList(entity: EntityDef): string {
   return ['id', ...entity.fields.map((f) => `${f.column} AS "${f.name}"`)].join(', ')
@@ -45,12 +50,14 @@ export async function createRow(
   if (slugField) {
     const provided = String(value[slugField.name] ?? '')
     if (provided) {
+      if (isReserved(entity, provided)) return { ok: false, errors: { [slugField.name]: SLUG_RESERVED } }
       if (await isSlugTaken(db, entity.table, provided)) {
         return { ok: false, errors: { [slugField.name]: SLUG_TAKEN } }
       }
     } else {
       const source = entity.slugSource ? String(value[entity.slugSource] ?? '') : ''
-      value[slugField.name] = await uniqueSlug(db, entity.table, slugify(source))
+      const generated = slugify(source)
+      value[slugField.name] = await uniqueSlug(db, entity.table, isReserved(entity, generated) ? `${generated}-page` : generated)
     }
   }
 
@@ -89,6 +96,8 @@ export async function updateRow(
     const provided = String(value[slugField.name] ?? '')
     if (!provided) {
       value[slugField.name] = existing[slugField.name]
+    } else if (isReserved(entity, provided) && provided !== existing[slugField.name]) {
+      return { ok: false, errors: { [slugField.name]: SLUG_RESERVED } }
     } else if (await isSlugTaken(db, entity.table, provided, id)) {
       return { ok: false, errors: { [slugField.name]: SLUG_TAKEN } }
     }
