@@ -34,6 +34,19 @@
 .section-head { display: flex; justify-content: space-between; align-items: baseline; padding: 28px 32px 16px; border-top: 2px solid var(--color-text); }
 .section-head h3 { margin: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 32px 24px; }
+/* tag-neutral's fill is barely darker than the page background, so a chip placed directly on the
+   page (not on a card) needs its own border to read as a distinct, clickable pill. */
+.chips a.tag,
+.filter-row a.tag {
+  border: 1px solid var(--color-divider);
+  text-decoration: none;
+}
+.chips a.tag:hover,
+.filter-row a.tag:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-700);
+}
+.filter-row a.tag.on { border-color: var(--color-accent); }
 .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; padding: 0 32px 40px; }
 .steps3 { border-top: 2px solid var(--color-text); padding: 40px 32px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .steps3 > div { padding: 0 24px; border-left: 2px solid var(--color-divider); display: flex; flex-direction: column; gap: 10px; }
