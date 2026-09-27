@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-import { getCategoryHub, getComboMeta, getHome, getNav, getStyleHub, getToolHub } from '@/site/hubs'
+import { getCategoryHub, getComboMeta, getHome, getNav, getStyleHub, getStylesIndex, getToolHub } from '@/site/hubs'
 import { closeTestPool, resetDb } from '@/test/db'
 
 let pool: Awaited<ReturnType<typeof resetDb>>
@@ -30,6 +30,7 @@ beforeEach(async () => {
   ids.gpt = await one(`INSERT INTO tools (slug, name, sort_order) VALUES ('chatgpt','ChatGPT',2) RETURNING id`)
   ids.off = await one(`INSERT INTO tools (slug, name, is_active) VALUES ('off','Off',false) RETURNING id`)
   ids.cine = await one(`INSERT INTO styles (slug, name) VALUES ('cinematic','Cinematic') RETURNING id`)
+  ids.hiddenStyle = await one(`INSERT INTO styles (slug, name, is_active) VALUES ('hidden-style','Hidden Style', false) RETURNING id`)
   for (const [c, t] of [['portrait', 'mj'], ['portrait', 'gpt'], ['portrait', 'off'], ['travel', 'gpt'], ['ghost', 'gpt']]) {
     await pool.query('INSERT INTO category_tools (category_id, tool_id) VALUES ($1,$2)', [ids[c], ids[t]])
   }
@@ -92,5 +93,12 @@ describe('hubs', () => {
   it('combo meta returns the matrix fields and null for unlinked pairs', async () => {
     expect(await getComboMeta(pool, ids.portrait, ids.mj)).toEqual({ seoTitle: 'Combo title', seoDescription: '', intro: 'Combo intro', isIndexable: true })
     expect(await getComboMeta(pool, ids.travel, ids.mj)).toBeNull()
+  })
+})
+
+describe('getStylesIndex', () => {
+  it('lists active styles with a live published-prompt count and excludes inactive styles', async () => {
+    const styles = await getStylesIndex(pool)
+    expect(styles).toEqual([{ slug: 'cinematic', name: 'Cinematic', count: 1 }])
   })
 })

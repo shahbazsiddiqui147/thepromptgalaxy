@@ -152,6 +152,18 @@ export async function getStyleHub(db: Queryable, slug: string): Promise<StyleHub
   return { style, categories: categories.rows }
 }
 
+/** All active styles with a live count of published prompts (in active categories) that use each one. */
+export async function getStylesIndex(db: Queryable): Promise<Counted[]> {
+  const { rows } = await db.query<Counted>(
+    `SELECT s.slug, s.name,
+            (SELECT count(DISTINCT p.id)::int FROM prompt_styles ps JOIN prompts p ON p.id = ps.prompt_id
+               JOIN categories c ON c.id = p.category_id
+              WHERE ps.style_id = s.id AND ${PUBLISHED} AND c.is_active) AS count
+       FROM styles s WHERE s.is_active ORDER BY s.sort_order, s.name`,
+  )
+  return rows
+}
+
 export type ComboMeta = { seoTitle: string; seoDescription: string; intro: string; isIndexable: boolean }
 
 export async function getComboMeta(db: Queryable, categoryId: number, toolId: number): Promise<ComboMeta | null> {

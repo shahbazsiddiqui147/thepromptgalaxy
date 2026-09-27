@@ -23,6 +23,7 @@ export async function getSitemapEntries(db: Queryable): Promise<SitemapEntry[]> 
   ])
   return [
     { path: '/' },
+    ...(styles.rows.length > 0 ? [{ path: '/style/' }] : []),
     ...categories.rows.map((r) => ({ path: `/category/${r.slug}/` })),
     ...tools.rows.map((r) => ({ path: `/tool/${r.slug}/` })),
     ...styles.rows.map((r) => ({ path: `/style/${r.slug}/` })),

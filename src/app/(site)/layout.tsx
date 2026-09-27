@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getPool } from '@/db/pool'
-import { getNav } from '@/site/hubs'
+import { getNav, getStylesIndex } from '@/site/hubs'
 import { listFooterPages } from '@/site/pages'
 import { getSettings, type SiteSettings } from '@/site/settings'
 
@@ -30,7 +30,7 @@ function Social({ settings }: { settings: SiteSettings }) {
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const db = getPool()
-  const [nav, settings, footerPages] = await Promise.all([getNav(db), getSettings(db), listFooterPages(db)])
+  const [nav, settings, footerPages, styles] = await Promise.all([getNav(db), getSettings(db), listFooterPages(db), getStylesIndex(db)])
   return (
     <>
       <header className="nav site-nav">
@@ -40,6 +40,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         </Link>
         <Link href="/#categories" className="nav-link">By category</Link>
         <Link href="/#tools" className="nav-link">By tool</Link>
+        <Link href="/style/" className="nav-link">Art styles</Link>
         <form action="/search/" method="get" role="search" className="site-search">
           <input type="search" name="q" className="input" placeholder="Search prompts" aria-label="Search prompts" maxLength={100} />
         </form>
@@ -72,6 +73,15 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
               <Link key={t.slug} href={`/tool/${t.slug}/`}>{t.name}</Link>
             ))}
           </div>
+          {styles.length > 0 ? (
+            <div className="col">
+              <span className="label">Art styles</span>
+              {styles.slice(0, 6).map((s) => (
+                <Link key={s.slug} href={`/style/${s.slug}/`}>{s.name}</Link>
+              ))}
+              <Link href="/style/">All styles</Link>
+            </div>
+          ) : null}
           <div className="col">
             <span className="label">Company</span>
             {footerPages.map((p) => (

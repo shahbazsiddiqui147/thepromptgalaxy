@@ -56,7 +56,7 @@
 .banner-red h2 { font-size: 34px; margin: 0 0 6px; }
 .banner-red .btn { background: var(--color-bg); color: var(--color-text); }
 
-.site-footer { border-top: 2px solid var(--color-text); padding: 40px 32px 24px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; }
+.site-footer { border-top: 2px solid var(--color-text); padding: 40px 32px 24px; display: grid; grid-template-columns: 1.2fr repeat(auto-fit, minmax(120px, 1fr)); gap: 32px; }
 .site-footer a { color: var(--color-text); text-decoration: none; font-size: 13px; }
 .site-footer .col { display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
 .site-footer .col .label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; }

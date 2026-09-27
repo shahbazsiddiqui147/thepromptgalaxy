@@ -31,6 +31,7 @@ describe('getSitemapEntries', () => {
     const entries = await getSitemapEntries(pool)
     expect(entries.map((e) => e.path)).toEqual([
       '/',
+      '/style/',
       '/category/portrait/',
       '/tool/chatgpt/',
       '/tool/midjourney/',
