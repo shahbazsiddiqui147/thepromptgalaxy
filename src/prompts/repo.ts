@@ -93,6 +93,7 @@ export async function savePrompt(
     input.referenceNote,
     input.exampleMediaId,
     input.quickAnswer,
+    input.aiAnswer,
     input.articleHtml,
     input.seoTitle,
     input.seoDescription,
@@ -111,10 +112,10 @@ export async function savePrompt(
       await db.query(
         `UPDATE prompts SET slug = $1, title = $2, summary = $3, category_id = $4, prompt_text = $5, is_chain = $6,
                 is_premium = $7, reference_required = $8, reference_note = $9, example_media_id = $10,
-                quick_answer = $11, article_html = $12, seo_title = $13, seo_description = $14, status = $15,
-                published_at = CASE WHEN $15 = 'published' AND published_at IS NULL THEN now() ELSE published_at END,
+                quick_answer = $11, ai_answer = $12, article_html = $13, seo_title = $14, seo_description = $15, status = $16,
+                published_at = CASE WHEN $16 = 'published' AND published_at IS NULL THEN now() ELSE published_at END,
                 updated_at = now()
-          WHERE id = $16`,
+          WHERE id = $17`,
         [...row, id],
       )
       promptId = id
@@ -124,10 +125,10 @@ export async function savePrompt(
     } else {
       const { rows } = await db.query<{ id: number }>(
         `INSERT INTO prompts (slug, title, summary, category_id, prompt_text, is_chain, is_premium, reference_required,
-                reference_note, example_media_id, quick_answer, article_html, seo_title, seo_description, status,
+                reference_note, example_media_id, quick_answer, ai_answer, article_html, seo_title, seo_description, status,
                 author_id, published_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-                 CASE WHEN $15 = 'published' THEN now() ELSE NULL END)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,
+                 CASE WHEN $16 = 'published' THEN now() ELSE NULL END)
          RETURNING id`,
         [...row, actorId],
       )
@@ -188,7 +189,7 @@ export async function getPromptForEdit(db: Queryable, id: number): Promise<Promp
   const { rows } = await db.query<PromptForEdit>(
     `SELECT id, slug, title, summary, category_id AS "categoryId", prompt_text AS "promptText", is_chain AS "isChain",
             is_premium AS "isPremium", reference_required AS "referenceRequired", reference_note AS "referenceNote",
-            example_media_id AS "exampleMediaId", quick_answer AS "quickAnswer", article_html AS "articleHtml",
+            example_media_id AS "exampleMediaId", quick_answer AS "quickAnswer", ai_answer AS "aiAnswer", article_html AS "articleHtml",
             seo_title AS "seoTitle", seo_description AS "seoDescription", status, published_at AS "publishedAt"
        FROM prompts WHERE id = $1`,
     [id],

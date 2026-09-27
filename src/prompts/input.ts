@@ -98,8 +98,10 @@ export function parsePromptPayload(raw: unknown): ParseResult {
     faqs.push({ question, answer })
   }
 
-  const quickAnswer = str(r.quickAnswer)
+  const quickAnswer = sanitizeRichText(typeof r.quickAnswer === 'string' ? r.quickAnswer : '')
   limit('quickAnswer', quickAnswer, LIMITS.quickAnswer)
+  const aiAnswer = str(r.aiAnswer)
+  limit('aiAnswer', aiAnswer, LIMITS.aiAnswer)
   const articleHtml = sanitizeRichText(typeof r.articleHtml === 'string' ? r.articleHtml : '')
   limit('articleHtml', articleHtml, LIMITS.article)
   const referenceNote = str(r.referenceNote)
@@ -127,6 +129,7 @@ export function parsePromptPayload(raw: unknown): ParseResult {
       referenceNote,
       exampleMediaId: positiveInt(r.exampleMediaId),
       quickAnswer,
+      aiAnswer,
       articleHtml,
       tools,
       styleIds: uniqueInts(r.styleIds, LIMITS.styles),

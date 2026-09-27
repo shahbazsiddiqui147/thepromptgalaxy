@@ -70,9 +70,21 @@ describe('parsePromptPayload', () => {
     expect(bad.ok).toBe(false)
   })
 
-  it('sanitizes the article', () => {
-    const result = parse({ articleHtml: '<p>Hi</p><script>alert(1)</script>' })
+  it('sanitizes the article and the quick answer, and trims the AI answer', () => {
+    const result = parse({
+      articleHtml: '<p>Hi</p><script>alert(1)</script>',
+      quickAnswer: '<p>Use <strong>this</strong></p><script>alert(1)</script>',
+      aiAnswer: '  A short quotable answer.  ',
+    })
     expect(result.ok && result.value.articleHtml).toBe('<p>Hi</p>')
+    expect(result.ok && result.value.quickAnswer).toBe('<p>Use <strong>this</strong></p>')
+    expect(result.ok && result.value.aiAnswer).toBe('A short quotable answer.')
+  })
+
+  it('rejects an AI answer that is too long', () => {
+    const result = parse({ aiAnswer: 'x'.repeat(401) })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.errors.aiAnswer).toMatch(/at most 400/)
   })
 
   it('falls back to draft for an unknown status and de-duplicates ids', () => {

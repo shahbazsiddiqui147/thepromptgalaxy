@@ -12,8 +12,8 @@ async function one(sql: string, params: unknown[] = []): Promise<number> {
 async function prompt(slug: string, o: { status?: string; premium?: boolean; chain?: boolean; cat?: string } = {}) {
   const status = o.status ?? 'published'
   ids[slug] = await one(
-    `INSERT INTO prompts (slug, title, summary, category_id, status, is_premium, is_chain, prompt_text, quick_answer, article_html, seo_title, published_at, author_id, example_media_id)
-     VALUES ($1, $2, 'Sum', $3, $4, $5, $6, $7, 'Quick', '<p>Art</p>', 'SEO', $8, $9, $10) RETURNING id`,
+    `INSERT INTO prompts (slug, title, summary, category_id, status, is_premium, is_chain, prompt_text, quick_answer, ai_answer, article_html, seo_title, published_at, author_id, example_media_id)
+     VALUES ($1, $2, 'Sum', $3, $4, $5, $6, $7, 'Quick', 'AI quotable answer', '<p>Art</p>', 'SEO', $8, $9, $10) RETURNING id`,
     [slug, slug.toUpperCase(), ids[o.cat ?? 'portrait'], status, o.premium ?? false, o.chain ?? false, o.chain ? '' : 'SECRET TEXT', status === 'published' ? '2026-09-01' : null, ids.user, ids.media],
   )
   await pool.query('INSERT INTO prompt_tools (prompt_id, category_id, tool_id, is_primary, fit) VALUES ($1,$2,$3,true,$4)', [ids[slug], ids[o.cat ?? 'portrait'], ids.mj, 'great'])
@@ -51,7 +51,7 @@ describe('getPublicPrompt', () => {
     const p = await getPublicPrompt(pool, 'free')
     expect(p).toMatchObject({
       slug: 'free', title: 'FREE', summary: 'Sum', author: 'lensfox', isPremium: false, isChain: false,
-      promptText: 'SECRET TEXT', quickAnswer: 'Quick', articleHtml: '<p>Art</p>', seoTitle: 'SEO', exampleMediaId: ids.media,
+      promptText: 'SECRET TEXT', quickAnswer: 'Quick', aiAnswer: 'AI quotable answer', articleHtml: '<p>Art</p>', seoTitle: 'SEO', exampleMediaId: ids.media,
       category: { name: 'Portrait', slug: 'portrait' },
     })
     expect(p?.tools).toEqual([{ id: ids.mj, name: 'Midjourney', slug: 'midjourney', fit: 'great', isPrimary: true }])

@@ -39,4 +39,15 @@ describe('pages entity', () => {
     const { rows } = await pool.query('SELECT from_path, to_path FROM redirects')
     expect(rows).toEqual([{ from_path: '/about-us/', to_path: '/who-we-are/' }])
   })
+
+  it('saves the AI answer as plain text and enforces its length', async () => {
+    const result = await createRow(pool, pages, input({ aiAnswer: '  A short quotable answer.  ' }), null)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect((await getRow(pool, pages, result.id))?.aiAnswer).toBe('A short quotable answer.')
+    expect(await createRow(pool, pages, input({ aiAnswer: 'x'.repeat(401) }), null)).toEqual({
+      ok: false,
+      errors: { aiAnswer: 'Must be at most 400 characters' },
+    })
+  })
 })

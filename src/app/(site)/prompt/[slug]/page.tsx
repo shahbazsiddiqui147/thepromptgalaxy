@@ -19,11 +19,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await load(slug)
   if (!p) return {}
   const image = p.exampleMediaId ? `/media/${p.exampleMediaId}/card/` : undefined
+  const description = p.seoDescription || p.aiAnswer || p.summary || undefined
   return {
     title: `${p.seoTitle || p.title} – ThePromptGalaxy`,
-    description: p.seoDescription || p.summary || undefined,
+    description,
     alternates: { canonical: `/prompt/${slug}/` },
-    openGraph: { title: p.seoTitle || p.title, description: p.seoDescription || p.summary || undefined, type: 'article', images: image ? [image] : undefined },
+    openGraph: { title: p.seoTitle || p.title, description, type: 'article', images: image ? [image] : undefined },
   }
 }
 
@@ -33,7 +34,7 @@ function jsonLd(p: PublicPrompt) {
     {
       '@type': 'CreativeWork',
       name: p.title,
-      description: p.summary || undefined,
+      description: p.aiAnswer || p.summary || undefined,
       url,
       image: p.exampleMediaId ? `${SITE}/media/${p.exampleMediaId}/card/` : undefined,
       author: p.author ? { '@type': 'Person', name: p.author } : undefined,
@@ -161,7 +162,12 @@ export default async function PromptPage({ params }: Props) {
       {p.quickAnswer ? (
         <div className="article">
           <h3>Quick answer</h3>
-          <p>{p.quickAnswer}</p>
+          <div dangerouslySetInnerHTML={{ __html: p.quickAnswer }} />
+        </div>
+      ) : p.aiAnswer ? (
+        <div className="article">
+          <h3>Quick answer</h3>
+          <p>{p.aiAnswer}</p>
         </div>
       ) : null}
       {p.articleHtml ? <div className="article" dangerouslySetInnerHTML={{ __html: p.articleHtml }} /> : null}

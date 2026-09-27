@@ -286,11 +286,8 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
       {errors.exampleMediaId ? <div className="field-error">{errors.exampleMediaId}</div> : null}
 
       <h2>Content</h2>
-      <div className="field">
-        <label htmlFor="quickAnswer">Quick answer</label>
-        <textarea id="quickAnswer" className="input" rows={3} value={p.quickAnswer} onChange={(e) => update({ quickAnswer: e.target.value })} />
-        {errors.quickAnswer ? <div className="field-error">{errors.quickAnswer}</div> : null}
-      </div>
+      <RichTextField label="Quick answer" value={p.quickAnswer} onChange={(html) => update({ quickAnswer: html })} />
+      {errors.quickAnswer ? <div className="field-error">{errors.quickAnswer}</div> : null}
       <RichTextField label="Article" value={p.articleHtml} onChange={(html) => update({ articleHtml: html })} />
       {errors.articleHtml ? <div className="field-error">{errors.articleHtml}</div> : null}
 
@@ -342,7 +339,7 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
         {errors.similar ? <div className="field-error">{errors.similar}</div> : null}
       </div>
 
-      <h2>Search engines</h2>
+      <h2>SEO &amp; AI visibility</h2>
       <div className="field">
         <label htmlFor="seoTitle">SEO title</label>
         <input id="seoTitle" className="input" value={p.seoTitle} onChange={(e) => update({ seoTitle: e.target.value })} />
@@ -352,6 +349,15 @@ export function PromptForm({ id, initial, slugLocked, options }: Props) {
         <label htmlFor="seoDescription">SEO description</label>
         <textarea id="seoDescription" className="input" rows={2} value={p.seoDescription} onChange={(e) => update({ seoDescription: e.target.value })} />
         {errors.seoDescription ? <div className="field-error">{errors.seoDescription}</div> : null}
+      </div>
+      <div className="field">
+        <label htmlFor="aiAnswer">AI answer</label>
+        <textarea id="aiAnswer" className="input" rows={2} value={p.aiAnswer} onChange={(e) => update({ aiAnswer: e.target.value })} />
+        <div className="field-help">
+          A short, plain-text answer for AI tools like ChatGPT, Perplexity or Google AI Overviews to quote directly. Optional
+          &mdash; falls back to the quick answer or summary when left blank.
+        </div>
+        {errors.aiAnswer ? <div className="field-error">{errors.aiAnswer}</div> : null}
       </div>
 
       <h2>Publishing</h2>

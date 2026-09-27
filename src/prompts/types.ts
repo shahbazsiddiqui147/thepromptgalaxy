@@ -8,7 +8,8 @@ export const LIMITS = {
   stepLabel: 80,
   faqQuestion: 300,
   faqAnswer: 2000,
-  quickAnswer: 600,
+  quickAnswer: 800,
+  aiAnswer: 400,
   article: 60000,
   seoTitle: 120,
   seoDescription: 300,
@@ -39,6 +40,8 @@ export type PromptInput = {
   referenceNote: string
   exampleMediaId: number | null
   quickAnswer: string
+  /** A short, plain-text answer written for AI/answer engines to quote. Optional. */
+  aiAnswer: string
   articleHtml: string
   tools: PromptToolInput[]
   styleIds: number[]
@@ -67,6 +70,7 @@ export function emptyPrompt(): PromptInput {
     referenceNote: '',
     exampleMediaId: null,
     quickAnswer: '',
+    aiAnswer: '',
     articleHtml: '',
     tools: [],
     styleIds: [],

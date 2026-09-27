@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!page) return {}
   return {
     title: `${page.seoTitle || page.title} – ThePromptGalaxy`,
-    description: page.seoDescription || undefined,
+    description: page.seoDescription || page.aiAnswer || undefined,
     alternates: { canonical: `/${page.slug}/` },
   }
 }

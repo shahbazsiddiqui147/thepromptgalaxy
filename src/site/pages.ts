@@ -1,10 +1,19 @@
 import type { Queryable } from '@/db/pool'
 
-export type PublicPage = { slug: string; title: string; bodyHtml: string; seoTitle: string; seoDescription: string; updatedAt: Date }
+export type PublicPage = {
+  slug: string
+  title: string
+  bodyHtml: string
+  seoTitle: string
+  seoDescription: string
+  aiAnswer: string
+  updatedAt: Date
+}
 
 export async function getPublishedPage(db: Queryable, slug: string): Promise<PublicPage | null> {
   const { rows } = await db.query<PublicPage>(
-    `SELECT slug, title, body_html AS "bodyHtml", seo_title AS "seoTitle", seo_description AS "seoDescription", updated_at AS "updatedAt"
+    `SELECT slug, title, body_html AS "bodyHtml", seo_title AS "seoTitle", seo_description AS "seoDescription",
+            ai_answer AS "aiAnswer", updated_at AS "updatedAt"
        FROM pages WHERE slug = $1 AND is_published`,
     [slug],
   )

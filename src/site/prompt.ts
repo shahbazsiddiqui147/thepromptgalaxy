@@ -21,6 +21,8 @@ export type PublicPrompt = {
   referenceNote: string
   exampleMediaId: number | null
   quickAnswer: string
+  /** A short, plain-text answer written for AI/answer engines to quote. Empty when not set. */
+  aiAnswer: string
   articleHtml: string
   tools: { id: number; name: string; slug: string; fit: 'great' | 'good'; isPrimary: boolean }[]
   styles: { id: number; name: string; slug: string }[]
@@ -43,7 +45,7 @@ export async function getPublicPrompt(db: Queryable, slug: string): Promise<Publ
             u.handle AS author, p.save_count AS "saveCount", p.published_at AS "publishedAt", p.updated_at AS "updatedAt",
             p.is_premium AS "isPremium", p.is_chain AS "isChain", p.prompt_text AS "rawText",
             p.reference_required AS "referenceRequired", p.reference_note AS "referenceNote",
-            p.example_media_id AS "exampleMediaId", p.quick_answer AS "quickAnswer", p.article_html AS "articleHtml",
+            p.example_media_id AS "exampleMediaId", p.quick_answer AS "quickAnswer", p.ai_answer AS "aiAnswer", p.article_html AS "articleHtml",
             p.seo_title AS "seoTitle", p.seo_description AS "seoDescription"
        FROM prompts p
        JOIN categories c ON c.id = p.category_id

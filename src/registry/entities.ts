@@ -94,6 +94,14 @@ export const pages: EntityDef = {
     { name: 'sortOrder', column: 'sort_order', label: 'Sort order', type: 'number', default: 0, list: true },
     { name: 'seoTitle', column: 'seo_title', label: 'SEO title', type: 'text', maxLength: 120 },
     { name: 'seoDescription', column: 'seo_description', label: 'SEO description', type: 'textarea', maxLength: 300 },
+    {
+      name: 'aiAnswer',
+      column: 'ai_answer',
+      label: 'AI answer',
+      type: 'textarea',
+      maxLength: 400,
+      help: 'A short, plain-text answer for AI tools like ChatGPT or Perplexity to quote about this page. Optional — falls back to the SEO description.',
+    },
   ],
 }
 
