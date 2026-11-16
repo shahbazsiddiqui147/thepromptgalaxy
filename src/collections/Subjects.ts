@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { autoSlugHook } from '@/lib/autoSlug'
+import { revalidateSubject } from '@/lib/revalidateTaxonomy'
 
 // Admin controls the Subject list here — adding "Wedding" or "Pets" later
 // requires zero code changes, just a new entry in this collection.
@@ -15,6 +16,16 @@ export const Subjects: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [autoSlugHook('name')],
+    afterChange: [
+      ({ doc, previousDoc, req }) => {
+        revalidateSubject(req, doc.slug, previousDoc?.slug)
+      },
+    ],
+    afterDelete: [
+      ({ doc, req }) => {
+        revalidateSubject(req, doc.slug)
+      },
+    ],
   },
   fields: [
     {

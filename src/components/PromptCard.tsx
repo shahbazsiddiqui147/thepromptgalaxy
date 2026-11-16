@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { mediaSizeUrl } from '@/lib/mediaUrl'
 import type { Prompt, Subject, ArtStyle, Media } from '@/payload-types'
 
 export function PromptCard({
@@ -17,7 +18,7 @@ export function PromptCard({
   const artStyle = prompt.artStyle as ArtStyle
   const href = `/${subject.slug}/${artStyle.slug}/${prompt.slug}/`
   const coverImage = typeof prompt.coverImage === 'object' ? (prompt.coverImage as Media | null) : null
-  const coverImageUrl = coverImage?.sizes?.card?.url || coverImage?.url
+  const coverImageUrl = mediaSizeUrl(coverImage, 'card')
 
   return (
     <article

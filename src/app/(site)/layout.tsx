@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { anton, archivo, jetbrainsMono } from './fonts'
+import { AccountLink } from '@/components/AccountLink'
 import { SearchForm } from '@/components/SearchForm'
-import { getCurrentCustomer } from '@/lib/customerAuth'
 import { getSiteSettings } from '@/lib/queries'
 import type { Media } from '@/payload-types'
 import './globals.css'
@@ -34,7 +34,6 @@ const navLinks = [
 ]
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const customer = await getCurrentCustomer()
   const siteSettings = await getSiteSettings()
   const logo = typeof siteSettings.logo === 'object' ? (siteSettings.logo as Media | null) : null
   const logoUrl = logo?.url
@@ -75,21 +74,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           </nav>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <SearchForm />
-            <Link
-              href={customer ? '/account' : '/login'}
-              className="mono"
-              style={{
-                background: 'var(--amber)',
-                color: 'var(--ink)',
-                textDecoration: 'none',
-                fontSize: 13,
-                fontWeight: 700,
-                padding: '8px 16px',
-                borderRadius: 2,
-              }}
-            >
-              {customer ? 'Account' : 'Sign In'}
-            </Link>
+            <AccountLink />
           </div>
         </header>
         <main>{children}</main>

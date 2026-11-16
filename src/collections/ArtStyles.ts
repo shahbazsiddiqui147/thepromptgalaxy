@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { autoSlugHook } from '@/lib/autoSlug'
+import { revalidateArtStyle } from '@/lib/revalidateTaxonomy'
 
 export const ArtStyles: CollectionConfig = {
   slug: 'art-styles',
@@ -13,6 +14,16 @@ export const ArtStyles: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [autoSlugHook('name')],
+    afterChange: [
+      ({ doc, previousDoc, req }) => {
+        revalidateArtStyle(req, doc.slug, previousDoc?.slug)
+      },
+    ],
+    afterDelete: [
+      ({ doc, req }) => {
+        revalidateArtStyle(req, doc.slug)
+      },
+    ],
   },
   fields: [
     {

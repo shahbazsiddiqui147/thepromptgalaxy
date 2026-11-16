@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import type { UploadFieldClient, Validate } from 'payload'
-import { FieldDescription, FieldError, FieldLabel, useConfig, useField } from '@payloadcms/ui'
+import { FieldDescription, FieldError, FieldLabel, useConfig, useField, useUploadHandlers } from '@payloadcms/ui'
 
 /**
  * Single-file inline upload control for `upload` fields (hasMany: false,
@@ -58,6 +58,7 @@ export function InlineUpload(props: InlineUploadProps) {
   const { config } = useConfig()
   const { routes, serverURL } = config
   const relationTo = Array.isArray(field?.relationTo) ? field.relationTo[0] : field?.relationTo
+  const { getUploadHandler } = useUploadHandlers()
 
   const [doc, setDoc] = useState<MediaDoc | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -96,9 +97,31 @@ export function InlineUpload(props: InlineUploadProps) {
       setError(null)
       setUploading(true)
       try {
+        // When Vercel Blob client uploads are enabled, send the file straight
+        // to Blob and only POST a reference. Otherwise the raw file rides in
+        // the request body (fine locally, limited to ~4.5MB on Vercel).
+        const handler = relationTo === 'media' ? getUploadHandler({ collectionSlug: relationTo }) : null
+        let fileField: Blob | string = file
+        if (typeof handler === 'function') {
+          let filename = file.name
+          const clientUploadContext = await handler({
+            file,
+            updateFilename: (value) => {
+              filename = value
+            },
+          })
+          fileField = JSON.stringify({
+            clientUploadContext,
+            collectionSlug: relationTo,
+            filename,
+            mimeType: file.type,
+            size: file.size,
+          })
+        }
+
         const formData = new FormData()
-        formData.append('file', file)
-        formData.append('alt', deriveAlt(file.name, fieldLabel))
+        formData.append('_payload', JSON.stringify({ alt: deriveAlt(file.name, fieldLabel) }))
+        formData.append('file', fileField)
 
         const res = await fetch(`${serverURL}${routes.api}/${relationTo}`, {
           method: 'POST',
@@ -121,7 +144,7 @@ export function InlineUpload(props: InlineUploadProps) {
         setUploading(false)
       }
     },
-    [relationTo, serverURL, routes.api, fieldLabel, setValue],
+    [relationTo, serverURL, routes.api, fieldLabel, setValue, getUploadHandler],
   )
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
