@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { autoSlugHook } from '@/lib/autoSlug'
+import { revalidateTool } from '@/lib/revalidateTaxonomy'
 
 export const Tools: CollectionConfig = {
   slug: 'tools',
@@ -13,6 +14,16 @@ export const Tools: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [autoSlugHook('name')],
+    afterChange: [
+      ({ doc, previousDoc, req }) => {
+        revalidateTool(req, doc.slug, previousDoc?.slug)
+      },
+    ],
+    afterDelete: [
+      ({ doc, req }) => {
+        revalidateTool(req, doc.slug)
+      },
+    ],
   },
   fields: [
     {

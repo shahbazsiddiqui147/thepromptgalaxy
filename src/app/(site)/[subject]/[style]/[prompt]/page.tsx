@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { getPromptBySlug, getAdSettings, getSavedCount } from '@/lib/queries'
+import { mediaSizeUrl } from '@/lib/mediaUrl'
 import { QuickAnswer } from '@/components/QuickAnswer'
 import { CopyBox } from '@/components/CopyBox'
 import { FaqAccordion } from '@/components/FaqAccordion'
@@ -164,13 +165,15 @@ export default async function PromptPage({
           ? (() => {
               const first = prompt.steps?.[0]?.exampleResult
               const image = typeof first === 'object' ? (first as Media | null) : null
-              const imageUrl = image?.sizes?.card?.url || image?.url
-              return imageUrl ? [{ imageUrl, alt: image?.alt || prompt.title, note: null }] : []
+              const imageUrl = mediaSizeUrl(image, 'card')
+              const thumbnailUrl = mediaSizeUrl(image, 'thumbnail')
+              return imageUrl ? [{ imageUrl, thumbnailUrl, alt: image?.alt || prompt.title, note: null }] : []
             })()
           : (prompt.exampleResults ?? []).flatMap((result) => {
               const image = typeof result.image === 'object' ? (result.image as Media | null) : null
-              const imageUrl = image?.sizes?.card?.url || image?.url
-              return imageUrl ? [{ imageUrl, alt: image?.alt || prompt.title, note: result.note }] : []
+              const imageUrl = mediaSizeUrl(image, 'card')
+              const thumbnailUrl = mediaSizeUrl(image, 'thumbnail')
+              return imageUrl ? [{ imageUrl, thumbnailUrl, alt: image?.alt || prompt.title, note: result.note }] : []
             })
         return (
           <ExampleResultGallery
@@ -204,7 +207,7 @@ export default async function PromptPage({
                     <CopyBox text={step.promptText} />
                     {(() => {
                       const stepImage = typeof step.exampleResult === 'object' ? (step.exampleResult as Media | null) : null
-                      const stepImageUrl = stepImage?.sizes?.card?.url || stepImage?.url
+                      const stepImageUrl = mediaSizeUrl(stepImage, 'thumbnail')
                       if (!stepImageUrl) return null
                       return (
                         <div

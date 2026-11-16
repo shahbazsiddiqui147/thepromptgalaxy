@@ -5,6 +5,8 @@ import Image from 'next/image'
 
 type GalleryResult = {
   imageUrl?: string
+  /** Smaller rendition for the 44px variation strip. */
+  thumbnailUrl?: string | null
   alt: string
   note?: string | null
 }
@@ -139,7 +141,7 @@ export function ExampleResultGallery({
                   background: 'var(--ink-panel)',
                 }}
               >
-                <Image src={r.imageUrl} alt="" fill sizes="44px" style={{ objectFit: 'cover' }} />
+                <Image src={r.thumbnailUrl || r.imageUrl} alt="" fill sizes="44px" style={{ objectFit: 'cover' }} />
               </button>
             ) : null,
           )}

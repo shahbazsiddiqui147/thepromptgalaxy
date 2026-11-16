@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { formatRelativeTime } from '@/lib/formatRelativeTime'
+import { mediaSizeUrl } from '@/lib/mediaUrl'
 import type { Prompt, Subject, ArtStyle, Media } from '@/payload-types'
 
 // A fixed-width card for the homepage's horizontally-scrolling "Newly
@@ -12,7 +13,7 @@ export function NewlyPublishedCard({ prompt }: { prompt: Prompt }) {
   const artStyle = prompt.artStyle as ArtStyle
   const href = `/${subject.slug}/${artStyle.slug}/${prompt.slug}/`
   const coverImage = typeof prompt.coverImage === 'object' ? (prompt.coverImage as Media | null) : null
-  const coverImageUrl = coverImage?.sizes?.card?.url || coverImage?.url
+  const coverImageUrl = mediaSizeUrl(coverImage, 'card')
 
   return (
     <Link
