@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { dashboardContext, one, pageHref, readPage } from '@/lib/dashboard/http'
+import { dashboardContext, one, readPage } from '@/lib/dashboard/http'
 import { formatRelativeTime } from '@/lib/formatRelativeTime'
-import { SavedNote, Pager } from '@/components/dashboard/ui'
+import { Pager } from '@/components/dashboard/Pager'
+import { SavedNote } from '@/components/dashboard/ui'
 import type { ArtStyle, ContentType, Media, Prompt, Subject } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'Prompts' }
@@ -135,7 +136,7 @@ export default async function PromptsPage({
           </tbody>
         </table>
       </div>
-      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} hrefFor={(next) => pageHref('/dashboard/prompts/', preserved, next)} />
+      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} pathname="/dashboard/prompts/" params={preserved} />
     </>
   )
 }

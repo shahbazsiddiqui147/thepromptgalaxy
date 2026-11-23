@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { dashboardContext, formatWhen, one, pageHref, readPage } from '@/lib/dashboard/http'
-import { Pager } from '@/components/dashboard/ui'
+import { dashboardContext, formatWhen, one, readPage } from '@/lib/dashboard/http'
+import { Pager } from '@/components/dashboard/Pager'
 import type { Customer } from '@/payload-types'
 
 export const metadata: Metadata = { title: 'Customers' }
@@ -76,7 +76,7 @@ export default async function CustomersPage({
           </tbody>
         </table>
       </div>
-      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} hrefFor={(next) => pageHref('/dashboard/customers/', { q }, next)} />
+      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} pathname="/dashboard/customers/" params={{ q }} />
     </>
   )
 }
