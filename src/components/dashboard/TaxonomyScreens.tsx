@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { deleteTaxonomy, saveTaxonomy, type TaxonomyKind } from '@/lib/dashboard/actions/records'
-import { clientUploadsEnabled, dashboardContext, findOrNotFound, formatWhen, one, pageHref, readPage } from '@/lib/dashboard/http'
+import { clientUploadsEnabled, dashboardContext, findOrNotFound, formatWhen, one, readPage } from '@/lib/dashboard/http'
 import { ImagePicker } from '@/components/dashboard/ImagePicker'
+import { Pager } from '@/components/dashboard/Pager'
 import { StringList } from '@/components/dashboard/fields'
-import { ActionForm, ConfirmForm, Pager, SavedNote, SubmitButton } from '@/components/dashboard/ui'
+import { ActionForm, ConfirmForm, SavedNote, SubmitButton } from '@/components/dashboard/ui'
 import type { UploadedMedia } from '@/components/dashboard/uploadMedia'
 import type { ArtStyle, ContentType, Media, Subject, Tool } from '@/payload-types'
 
@@ -109,7 +110,7 @@ export async function TaxonomyList({
           </tbody>
         </table>
       </div>
-      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} hrefFor={(next) => pageHref(href, { q }, next)} />
+      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} pathname={href} params={{ q }} />
     </>
   )
 }

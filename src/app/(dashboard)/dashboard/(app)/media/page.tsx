@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { deleteMedia, updateMediaAlt } from '@/lib/dashboard/actions/records'
 import { toMediaCard } from '@/lib/dashboard/media'
-import { clientUploadsEnabled, dashboardContext, formatBytes, formatWhen, one, pageHref, readPage } from '@/lib/dashboard/http'
+import { clientUploadsEnabled, dashboardContext, formatBytes, formatWhen, one, readPage } from '@/lib/dashboard/http'
 import { MediaDropzone } from '@/components/dashboard/MediaDropzone'
-import { ActionForm, ConfirmForm, Pager, SavedNote, SubmitButton } from '@/components/dashboard/ui'
+import { Pager } from '@/components/dashboard/Pager'
+import { ActionForm, ConfirmForm, SavedNote, SubmitButton } from '@/components/dashboard/ui'
 
 export const metadata: Metadata = { title: 'Media' }
 
@@ -79,12 +80,7 @@ export default async function MediaPage({
         })}
       </div>
       {result.docs.length === 0 ? <p>No images match.</p> : null}
-      <Pager
-        page={result.page ?? 1}
-        totalPages={result.totalPages}
-        totalDocs={result.totalDocs}
-        hrefFor={(next) => pageHref('/dashboard/media/', { q }, next)}
-      />
+      <Pager page={result.page ?? 1} totalPages={result.totalPages} totalDocs={result.totalDocs} pathname="/dashboard/media/" params={{ q }} />
     </>
   )
 }
