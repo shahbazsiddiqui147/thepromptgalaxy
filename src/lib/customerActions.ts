@@ -68,13 +68,13 @@ export async function signupAction(formData: FormData): Promise<void> {
   const password = String(formData.get('password') ?? '')
 
   if (!name || !email || !password) {
-    redirect('/signup?error=missing_fields')
+    redirect('/register?error=missing_fields')
   }
   if (!isPlausibleEmail(email)) {
-    redirect('/signup?error=invalid_email')
+    redirect('/register?error=invalid_email')
   }
   if (password.length < 8) {
-    redirect('/signup?error=weak_password')
+    redirect('/register?error=weak_password')
   }
 
   const payload = await getPayloadClient()
@@ -91,7 +91,7 @@ export async function signupAction(formData: FormData): Promise<void> {
     // — the alternative (a generic failure message) would be less useful
     // for the overwhelmingly common case.
     console.error('customer signup failed', err)
-    redirect('/signup?error=email_taken')
+    redirect('/register?error=email_taken')
   }
 
   // Account was created but immediate login failed for some reason — send

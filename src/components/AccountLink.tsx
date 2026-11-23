@@ -25,20 +25,8 @@ export function AccountLink() {
   }, [])
 
   return (
-    <Link
-      href={loggedIn ? '/account' : '/login'}
-      className="mono"
-      style={{
-        background: 'var(--amber)',
-        color: 'var(--ink)',
-        textDecoration: 'none',
-        fontSize: 13,
-        fontWeight: 700,
-        padding: '8px 16px',
-        borderRadius: 2,
-      }}
-    >
-      {loggedIn ? 'Account' : 'Sign In'}
+    <Link href={loggedIn ? '/account/' : '/login/'} style={{ fontSize: 14, color: 'var(--color-text)', textDecoration: 'none' }}>
+      {loggedIn ? 'Account' : 'Log in'}
     </Link>
   )
 }

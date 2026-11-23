@@ -1,5 +1,4 @@
 import { PromptCard } from './PromptCard'
-import { Breadcrumbs } from './Breadcrumbs'
 import { JsonLd } from './JsonLd'
 import type { Prompt, Subject, ArtStyle } from '@/payload-types'
 
@@ -25,34 +24,37 @@ export function ArchiveListing({
     url: canonicalUrl,
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: prompts.map((p, i) => {
-        const promptSubject = p.subject as Subject
-        const promptArtStyle = p.artStyle as ArtStyle
+      itemListElement: prompts.map((prompt, index) => {
+        const promptSubject = prompt.subject as Subject
+        const promptArtStyle = prompt.artStyle as ArtStyle
         return {
           '@type': 'ListItem',
-          position: i + 1,
-          url: `https://thepromptgalaxy.com/${promptSubject.slug}/${promptArtStyle.slug}/${p.slug}/`,
-          name: p.title,
+          position: index + 1,
+          url: `https://thepromptgalaxy.com/${promptSubject.slug}/${promptArtStyle.slug}/${prompt.slug}/`,
+          name: prompt.title,
         }
       }),
     },
   }
 
   return (
-    <div className="wrap" style={{ padding: '24px 24px 56px' }}>
+    <div className="page-pad" style={{ paddingTop: 40, paddingBottom: 56 }}>
       <JsonLd data={schema} />
-      <Breadcrumbs crumbs={crumbs} />
-      <h1 className="display" style={{ fontSize: 'clamp(28px, 5vw, 46px)', margin: '12px 0' }}>
-        {title}
-      </h1>
-      <p style={{ color: 'var(--fade)', fontSize: 15, maxWidth: 620, marginBottom: 24 }}>{intro}</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-        {prompts.map((p) => (
-          <PromptCard key={p.id} prompt={p} />
+      <div style={{ fontSize: 13, color: 'var(--color-neutral-700)', marginBottom: 12 }}>
+        {crumbs.map((crumb, index) => (
+          <span key={crumb.href}>
+            {index > 0 && ' / '}
+            {index === crumbs.length - 1 ? crumb.label : <a href={crumb.href}>{crumb.label}</a>}
+          </span>
         ))}
-        {prompts.length === 0 && (
-          <p style={{ color: 'var(--fade)', gridColumn: '1/-1' }}>No prompts here yet.</p>
-        )}
+      </div>
+      <h1 style={{ fontSize: 'clamp(36px, 6vw, 56px)', letterSpacing: '-0.03em', margin: '0 0 12px' }}>{title}</h1>
+      <p style={{ color: 'var(--color-neutral-700)', fontSize: 15, maxWidth: 640, marginBottom: 24 }}>{intro}</p>
+      <div className="card-grid">
+        {prompts.map((prompt) => (
+          <PromptCard key={prompt.id} prompt={prompt} />
+        ))}
+        {prompts.length === 0 && <p className="empty-state">No prompts here yet.</p>}
       </div>
     </div>
   )
