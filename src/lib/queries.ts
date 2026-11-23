@@ -251,3 +251,42 @@ export async function getTrendingPrompts(limit = 10): Promise<{ prompt: Prompt; 
     .sort((a, b) => b.saveCount - a.saveCount)
     .slice(0, limit)
 }
+
+export const getLibraryStats = cache(async () => {
+  const payload = await getPayloadClient()
+  const [prompts, subjects, tools] = await Promise.all([
+    payload.count({ collection: 'prompts', where: PUBLISHED }),
+    payload.count({ collection: 'subjects' }),
+    payload.count({ collection: 'tools', where: { active: { equals: true } } }),
+  ])
+  return {
+    promptCount: prompts.totalDocs,
+    subjectCount: subjects.totalDocs,
+    toolCount: tools.totalDocs,
+  }
+})
+
+export const getSaveCountMap = cache(async (): Promise<Record<number, number>> => {
+  const payload = await getPayloadClient()
+  const customersResult = await payload.find({ collection: 'customers', limit: 1000, depth: 0 })
+  const counts: Record<number, number> = {}
+  for (const customer of customersResult.docs) {
+    for (const saved of customer.savedPrompts ?? []) {
+      const id = typeof saved === 'object' && saved !== null ? saved.id : saved
+      if (typeof id === 'number') counts[id] = (counts[id] ?? 0) + 1
+    }
+  }
+  return counts
+})
+
+export async function getPublishedPrompts(limit = 500): Promise<Prompt[]> {
+  const payload = await getPayloadClient()
+  const result = await payload.find({
+    collection: 'prompts',
+    where: PUBLISHED,
+    depth: 2,
+    sort: '-createdAt',
+    limit,
+  })
+  return result.docs
+}

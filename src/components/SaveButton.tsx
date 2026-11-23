@@ -62,9 +62,9 @@ export function SaveButton({ promptId }: { promptId: number }) {
       title="Collections coming soon"
       style={{
         ...baseStyle,
-        border: '1px solid var(--border)',
+        border: '1px solid var(--color-divider)',
         background: 'transparent',
-        color: 'var(--fade)',
+        color: 'var(--color-neutral-700)',
         fontWeight: 700,
         cursor: 'default',
       }}
@@ -85,8 +85,8 @@ export function SaveButton({ promptId }: { promptId: number }) {
         aria-hidden
         style={{
           ...baseStyle,
-          border: '1px solid var(--border)',
-          color: 'var(--fade)',
+          border: '1px solid var(--color-divider)',
+          color: 'var(--color-neutral-700)',
           visibility: 'hidden',
         }}
       >
@@ -103,9 +103,9 @@ export function SaveButton({ promptId }: { promptId: number }) {
           className="mono"
           style={{
             ...baseStyle,
-            border: '1px solid var(--amber)',
+            border: '1px solid var(--color-accent)',
             background: 'transparent',
-            color: 'var(--amber)',
+            color: 'var(--color-accent)',
             fontWeight: 700,
             textDecoration: 'none',
           }}
@@ -148,18 +148,18 @@ export function SaveButton({ promptId }: { promptId: number }) {
           saved
             ? {
                 ...baseStyle,
-                border: '1px solid var(--amber)',
-                background: 'var(--amber)',
-                color: 'var(--ink)',
+                border: '1px solid var(--color-accent)',
+                background: 'var(--color-accent)',
+                color: 'var(--color-bg)',
                 fontWeight: 700,
                 opacity: pending ? 0.6 : 1,
                 cursor: pending ? 'default' : 'pointer',
               }
             : {
                 ...baseStyle,
-                border: '1px solid var(--amber)',
+                border: '1px solid var(--color-accent)',
                 background: 'transparent',
-                color: 'var(--amber)',
+                color: 'var(--color-accent)',
                 fontWeight: 700,
                 opacity: pending ? 0.6 : 1,
                 cursor: pending ? 'default' : 'pointer',

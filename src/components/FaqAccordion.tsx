@@ -21,11 +21,11 @@ export function FaqAccordion({ faqs }: { faqs: Faq[] }) {
   return (
     <div style={{ marginTop: 40 }}>
       <JsonLd data={schema} />
-      <div className="mono" style={{ fontSize: 11, color: 'var(--fade)', letterSpacing: '0.15em', marginBottom: 4 }}>
+      <div className="mono" style={{ fontSize: 11, color: 'var(--color-neutral-700)', letterSpacing: '0.15em', marginBottom: 4 }}>
         FREQUENTLY ASKED QUESTIONS
       </div>
       {faqs.map((f, i) => (
-        <div key={f.question} style={{ borderBottom: '1px solid var(--border)' }}>
+        <div key={f.question} style={{ borderBottom: '1px solid var(--color-divider)' }}>
           <button
             onClick={() => setOpenIndex(openIndex === i ? null : i)}
             aria-expanded={openIndex === i}
@@ -39,16 +39,16 @@ export function FaqAccordion({ faqs }: { faqs: Faq[] }) {
               cursor: 'pointer',
               padding: '14px 4px',
               textAlign: 'left',
-              color: 'var(--paper)',
+              color: 'var(--color-text)',
               fontSize: 14,
               fontWeight: 600,
             }}
           >
             <span>{f.question}</span>
-            <span style={{ color: 'var(--amber)' }}>{openIndex === i ? '−' : '+'}</span>
+            <span style={{ color: 'var(--color-accent)' }}>{openIndex === i ? '−' : '+'}</span>
           </button>
           {openIndex === i && (
-            <p id={`faq-answer-${i}`} style={{ color: 'var(--fade)', fontSize: 13.5, lineHeight: 1.55, margin: '0 4px 16px' }}>
+            <p id={`faq-answer-${i}`} style={{ color: 'var(--color-neutral-700)', fontSize: 13.5, lineHeight: 1.55, margin: '0 4px 16px' }}>
               {f.answer}
             </p>
           )}

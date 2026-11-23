@@ -1,22 +1,9 @@
-import { Anton, Archivo, JetBrains_Mono } from 'next/font/google'
+import { Archivo } from 'next/font/google'
 
-export const anton = Anton({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-anton',
-  display: 'swap',
-})
-
+// Weights match the Modernist sheet: 400 body, 600 labels, 800 headings.
 export const archivo = Archivo({
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '600', '800'],
   subsets: ['latin'],
   variable: '--font-archivo',
-  display: 'swap',
-})
-
-export const jetbrainsMono = JetBrains_Mono({
-  weight: ['400', '500'],
-  subsets: ['latin'],
-  variable: '--font-mono',
   display: 'swap',
 })
